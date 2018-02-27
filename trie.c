@@ -1,6 +1,7 @@
 #include "trie.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*Allocate space for a new trie node and initialize it*/
 TrieNode * newTrieNode(char letter){
@@ -25,6 +26,12 @@ void addLetter(char c, TrieNode ** rootPointer){
         nodePointer = &((*nodePointer)->nextLetter);
     }
     *nodePointer = newTrieNode(c);
+}
+
+void addWord(char * word, TrieNode ** rootPointer){
+    for(int i=0; i<strlen(word); i++){
+        addLetter(word[i], rootPointer);
+    }
 }
 
 void printTrie(TrieNode * root){

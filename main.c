@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include "trie.h"
 
+#include <string.h>
+
 int main(void){
 	printf("Hello World!\n");
 	TrieNode * trie = NULL;
-	addLetter('c', &trie);
-	addLetter('l', &trie);
-	addLetter('g', &trie);
+	addWord("test input thanks", &trie);
 	printTrie(trie);
 	return 0;
 }

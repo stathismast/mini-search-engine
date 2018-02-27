@@ -15,5 +15,6 @@ typedef struct TrieNode{
 TrieNode * newTrieNode(char letter);
 void printTrieNode(TrieNode * node);
 
-void addLetter(char c, TrieNode ** root);
+void addLetter(char c, TrieNode ** rootPointer);
+void addWord(char * word, TrieNode ** rootPointer);
 void printTrie(TrieNode * root);
