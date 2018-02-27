@@ -1,10 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "trieNode.h"
+#include "trie.h"
 
 int main(void){
 	printf("Hello World!\n");
-	TrieNode * trie = newTrieNode('c');
-	printf("Letter is %c.\n", trie->letter);
+	Trie * trie = newTrie();
+	addLetter('c', trie);
+	addLetter('l', trie);
+	addLetter('g', trie);
+	printTrie(trie);
 	return 0;
 }
+
+// OBJS = main.o trieNode.o postingList.o
+// SOURCE = main.c trieNode.c postingList.c
+// HEADER = trieNode.h postingList.h
+// OUT = main
+// CC = gcc
+// FLAGS = -g -c
+//
+// main: $(OBJS)
+// 	$(CC) -o $(OUT) $(OBJS) -g

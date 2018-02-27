@@ -1,2 +1,2 @@
 all:
-	gcc main.c trieNode.c postingList.c
+	gcc main.c trie.c trieNode.c postingList.c

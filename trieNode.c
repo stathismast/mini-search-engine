@@ -9,6 +9,7 @@ TrieNode * newTrieNode(char letter){
 	node->otherLetter = NULL;
 	node->nextLetter = NULL;
 	node->postingList = NULL;
+	return node;
 }
 
 void printTrieNode(TrieNode * node){

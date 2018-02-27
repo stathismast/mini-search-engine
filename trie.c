@@ -1,22 +1,25 @@
+#include "trie.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct PostingList{
-	int i;
-	int j;
-} PostingList;
+Trie * newTrie(){
+    Trie * ptr = malloc(sizeof(Trie));
+    ptr->root = NULL;
+    return ptr;
+}
 
-typedef struct Trie{
-	char letter;
-	struct Trie * otherLetter;
-	struct Trie * nextLetter;
-	PostingList * postingList;
-} Trie;
+void addLetter(char c, Trie * trie){
+    TrieNode ** nodePointer = &trie->root;
+    while(*nodePointer != NULL){
+        nodePointer = &((*nodePointer)->nextLetter);
+    }
+    *nodePointer = newTrieNode(c);
+}
 
-int main(void){
-	printf("Hello World!\n");
-	Trie trie;
-	trie.letter = 'c';
-	printf("Letter is %c.\n", trie.letter);
-	return 0;
+void printTrie(Trie * trie){
+    TrieNode * node = trie->root;
+    while(node != NULL){
+        printf("%c\n", node->letter);
+        node = node->nextLetter;
+    }
 }
