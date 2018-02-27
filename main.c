@@ -4,10 +4,10 @@
 
 int main(void){
 	printf("Hello World!\n");
-	Trie * trie = newTrie();
-	addLetter('c', trie);
-	addLetter('l', trie);
-	addLetter('g', trie);
+	TrieNode * trie = NULL;
+	addLetter('c', &trie);
+	addLetter('l', &trie);
+	addLetter('g', &trie);
 	printTrie(trie);
 	return 0;
 }

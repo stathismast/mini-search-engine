@@ -1,14 +1,19 @@
-#include "trieNode.h"
+#include "postingList.h"
 
-#ifndef TRIE_H
-#define TRIE_H
+#ifndef TRIENODE_H
+#define TRIENODE_H
 
-typedef struct Trie{
-    TrieNode * root;
-}Trie;
+typedef struct TrieNode{
+	char letter;
+	struct TrieNode * otherLetter; //A letter of a different word
+	struct TrieNode * nextLetter;  //The letter following this one
+	PostingList * postingList;     //Posting list for the word ending in this letter.
+} TrieNode;
 
-#endif //TRIE_H
+#endif //TRIENODE_H
 
-Trie * newTrie();
-void addLetter(char c, Trie * trie);
-void printTrie(Trie * trie);
+TrieNode * newTrieNode(char letter);
+void printTrieNode(TrieNode * node);
+
+void addLetter(char c, TrieNode ** root);
+void printTrie(TrieNode * root);
