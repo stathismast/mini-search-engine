@@ -45,6 +45,7 @@ void addWord(char * word, TrieNode ** rootPointer){
 	if(*rootPointer == NULL){
 		*rootPointer = newTrieNode(word[0]);
 		//Check if this was the last letter of the word
+		//If so add the nesessary info to its posting list
 		if(strlen(word) == 1){
 			addToPostingList(*rootPointer);
 		}
@@ -56,6 +57,7 @@ void addWord(char * word, TrieNode ** rootPointer){
 	//at the point that we want to insert it
 	if(word[0] == (*rootPointer)->letter){
 		//Check if this was the last letter of the word
+		//If so add the nesessary info to its posting list
 		if(strlen(word) == 1){
 			addToPostingList(*rootPointer);
 		}
@@ -63,6 +65,7 @@ void addWord(char * word, TrieNode ** rootPointer){
 	}
 	else{
 		//Check if this was the last letter of the word
+		//If so add the nesessary info to its posting list
 		if(strlen(word) == 1){
 			addToPostingList(*rootPointer);
 		}
@@ -70,8 +73,25 @@ void addWord(char * word, TrieNode ** rootPointer){
 	}
 }
 
-void printEveryWord(TrieNode * root){
-	return;
+int checkIfWordExists(char * word, TrieNode * root){
+	int counter = 0;
+	TrieNode * node = root;
+	while(counter < strlen(word)){
+		while(node->letter != word[counter]){
+			if(node->otherLetter != NULL){
+				node = node->otherLetter;
+			}
+			else{
+				return 0;
+			}
+		}
+		if(node->nextLetter != NULL && counter != strlen(word)) node = node->nextLetter;
+		counter++;
+	}
+	if(counter == strlen(word) && node->postingList != NULL){
+		return 1;
+	}
+	return 0;
 }
 
 void addToPostingList(TrieNode * node){

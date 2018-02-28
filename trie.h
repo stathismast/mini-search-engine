@@ -18,5 +18,5 @@ void printTrieNode(TrieNode * node);
 void addLetter(char c, TrieNode ** rootPointer);
 void addWord(char * word, TrieNode ** rootPointer);
 void printTrie(TrieNode * root);
-void printEveryWord(TrieNode * root);
+int checkIfWordExists(char * word, TrieNode * root);
 void addToPostingList(TrieNode * node);
