@@ -8,6 +8,7 @@ int main(void){
 	printf("Hello World!\n");
 	TrieNode * trie = NULL;
 	addWord("test input thanks", &trie);
+	addWord("secondInputYou'reWelcome", &trie);
 	printTrie(trie);
 	return 0;
 }
