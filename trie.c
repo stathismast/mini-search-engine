@@ -19,7 +19,8 @@ void printTrie(TrieNode * node){
 
 	printf("\n%c", node->letter);
 	if(node->otherLetter != NULL) printf(" --> %c\n", node->otherLetter->letter); else printf("\n");
-	if(node->nextLetter != NULL) printf("|\n%c\n", node->nextLetter->letter); else printf("----Posting List: [%d,%d]\n", node->postingList->i, node->postingList->j);
+	if(node->nextLetter != NULL) printf("|\n%c\n", node->nextLetter->letter);
+	if(node->postingList != NULL) printf("----Posting List: [%d,%d]\n", node->postingList->i, node->postingList->j);
 
 	printTrie(node->nextLetter);
 	printTrie(node->otherLetter);

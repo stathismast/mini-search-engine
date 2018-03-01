@@ -9,20 +9,23 @@ int main(void){
 	TrieNode * trie = NULL;
 	addWord("abcdefg", &trie);
 	addWord("ackbar", &trie);
+	addWord("ackbay", &trie);
 	addWord("abcDEFG", &trie);
 	addWord("free", &trie);
-	addWord("fredo", &trie);
+	addWord("freedom", &trie);
+	addWord("a", &trie);
+	addWord("dom", &trie);
 	printTrie(trie);
 	printf("Is 'abcdefg' a word? %d\n", checkIfWordExists("abcdefg",trie));
 	printf("Is 'ackbar' a word? %d\n", checkIfWordExists("ackbar",trie));
 	printf("Is 'abcDEFG' a word? %d\n", checkIfWordExists("abcDEFG",trie));
 	printf("Is 'free' a word? %d\n", checkIfWordExists("free",trie));
 	printf("Is 'fredo' a word? %d\n", checkIfWordExists("fredo",trie));
-	printf("Is 'abcd' a word? %d\n", checkIfWordExists("abcd",trie));
-	printf("Is 'kbar' a word? %d\n", checkIfWordExists("kbar",trie));
-	printf("Is 'abcDE' a word? %d\n", checkIfWordExists("abcDE",trie));
-	printf("Is 'freed' a word? %d\n", checkIfWordExists("freed",trie));
-	printf("Is 'fre' a word? %d\n", checkIfWordExists("fre",trie));
+	printf("Is 'abcdef' a word? %d\n", checkIfWordExists("abcdef",trie));
+	printf("Is 'ackbay' a word? %d\n", checkIfWordExists("ackbay",trie));
+	printf("Is 'abcDEfg' a word? %d\n", checkIfWordExists("abcDEfg",trie));
+	printf("Is 'freedom' a word? %d\n", checkIfWordExists("freedom",trie));
+	printf("Is 'a' a word? %d\n", checkIfWordExists("a",trie));
 	return 0;
 }
 
