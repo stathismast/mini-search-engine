@@ -20,7 +20,7 @@ void printTrie(TrieNode * node){
 	printf("\n%c", node->letter);
 	if(node->otherLetter != NULL) printf(" --> %c\n", node->otherLetter->letter); else printf("\n");
 	if(node->nextLetter != NULL) printf("|\n%c\n", node->nextLetter->letter);
-	if(node->postingList != NULL) printf("----Posting List: [%d,%d]\n", node->postingList->i, node->postingList->j);
+	if(node->postingList != NULL) { printf("----Posting List: "); printPostingList(node->postingList); printf("\n"); }
 
 	printTrie(node->nextLetter);
 	printTrie(node->otherLetter);
@@ -30,28 +30,28 @@ void printTrie(TrieNode * node){
 //Each time this function is called, it stores the first letter of the given word
 //and then calls itself for the rest of the letters. If a node for a letter does
 //not exist, it creates it.
-void addWord(char * word, TrieNode ** rootPointer){
+void addWord(char * word, int id, TrieNode ** rootPointer){
 	if(strlen(word) == 0) return;
 
 	//If this node is NULL we should first create a new node
 	if(*rootPointer == NULL){
 		*rootPointer = newTrieNode(word[0]);//Create new node
 		if(strlen(word) == 1){				//Check if this was the last letter of the word
-			addToPostingList(*rootPointer);	//If so add the nesessary info to its posting list
+			addToPostingList(id, &((*rootPointer)->postingList));	//If so add the nesessary info to its posting list
 			return;
 		}
-		addWord(word+1, &((*rootPointer)->nextLetter));	//Call this function for the rest of the letters
+		addWord(word+1, id, &((*rootPointer)->nextLetter));	//Call this function for the rest of the letters
 	}
 	else if(word[0] == (*rootPointer)->letter){
 		//If this letter of the given word already has a node
 		if(strlen(word) == 1){				//Check if this was the last letter of the word
-			addToPostingList(*rootPointer);	//If so add the nesessary info to its posting list
+			addToPostingList(id, &((*rootPointer)->postingList));	//If so add the nesessary info to its posting list
 			return;
 		}
-		addWord(word+1, &((*rootPointer)->nextLetter));	//Call this function for the rest of the letters
+		addWord(word+1, id, &((*rootPointer)->nextLetter));	//Call this function for the rest of the letters
 	}
 	else{ //If the letters don't match, maybe the given word will match to a different trie branch
-		addWord(word, &((*rootPointer)->otherLetter)); 	//Call this function for the same letter on a differnt trie branch
+		addWord(word, id, &((*rootPointer)->otherLetter)); 	//Call this function for the same letter on a differnt trie branch
 	}
 }
 
@@ -75,10 +75,4 @@ int checkIfWordExists(char * word, TrieNode * node){
 		//maybe it will match that of this node's 'otherLetter'
 		return checkIfWordExists(word, node->otherLetter);
 	}
-}
-
-void addToPostingList(TrieNode * node){
-	if(node->postingList == NULL) node->postingList = malloc(sizeof(PostingList));
-	node->postingList->i = 0;
-	node->postingList->j = 1;
 }

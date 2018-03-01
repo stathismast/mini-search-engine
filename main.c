@@ -7,14 +7,18 @@
 int main(void){
 	printf("Hello World!\n");
 	TrieNode * trie = NULL;
-	addWord("abcdefg", &trie);
-	addWord("ackbar", &trie);
-	addWord("ackbay", &trie);
-	addWord("abcDEFG", &trie);
-	addWord("free", &trie);
-	addWord("freedom", &trie);
-	addWord("a", &trie);
-	addWord("dom", &trie);
+	for(int i=0; i<3; i++){
+		for(int j=0; j<3; j++){
+			addWord("abcdefg", j, &trie);
+			addWord("ackbar", j, &trie);
+			addWord("ackbay", j, &trie);
+			addWord("abcDEFG", j, &trie);
+			addWord("free", j, &trie);
+			addWord("freedom", j, &trie);
+			addWord("a", j, &trie);
+			addWord("dom", j, &trie);
+		}
+	}
 	printTrie(trie);
 	printf("Is 'abcdefg' a word? %d\n", checkIfWordExists("abcdefg",trie));
 	printf("Is 'ackbar' a word? %d\n", checkIfWordExists("ackbar",trie));
@@ -28,13 +32,3 @@ int main(void){
 	printf("Is 'a' a word? %d\n", checkIfWordExists("a",trie));
 	return 0;
 }
-
-// OBJS = main.o trieNode.o postingList.o
-// SOURCE = main.c trieNode.c postingList.c
-// HEADER = trieNode.h postingList.h
-// OUT = main
-// CC = gcc
-// FLAGS = -g -c
-//
-// main: $(OBJS)
-// 	$(CC) -o $(OUT) $(OBJS) -g

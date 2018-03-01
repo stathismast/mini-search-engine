@@ -7,7 +7,7 @@ typedef struct TrieNode{
 	char letter;
 	struct TrieNode * otherLetter; //A letter of a different word
 	struct TrieNode * nextLetter;  //The letter following this one
-	PostingList * postingList;     //Posting list for the word ending in this letter.
+	PostingListNode * postingList;     //Posting list for the word ending in this letter.
 } TrieNode;
 
 #endif //TRIENODE_H
@@ -15,7 +15,6 @@ typedef struct TrieNode{
 TrieNode * newTrieNode(char letter);
 void printTrieNode(TrieNode * node);
 
-void addWord(char * word, TrieNode ** rootPointer);
+void addWord(char * word, int id, TrieNode ** rootPointer);
 void printTrie(TrieNode * root);
 int checkIfWordExists(char * word, TrieNode * root);
-void addToPostingList(TrieNode * node);
