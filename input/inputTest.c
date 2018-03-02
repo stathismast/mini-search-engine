@@ -20,7 +20,7 @@ lineInfo * newLineInfo(){
     return node;
 }
 
-//Returns the number of lines in input file and
+//Returns the number of lines in input file and creates
 //a list with the lengths for each of those lines
 int firstRead(FILE * input, lineInfo ** head){
     *head = newLineInfo();
@@ -40,9 +40,18 @@ int firstRead(FILE * input, lineInfo ** head){
     return lineCounter;
 }
 
-void secondRead(FILE * input, char ** lines, int lineCounter, lineInfo * head){
+
+char ** secondRead(FILE * input, int lineCounter, lineInfo * head){
+    char c, ** lines;
     lineInfo * node = head;
-    char c;
+
+    lines = malloc(lineCounter*sizeof(char*));
+    for(int i=0; i<lineCounter; i++){
+        lines[i] = malloc(node->letterCount * sizeof(char));
+        node = node->next;
+    }
+
+    node = head;
     for(int i=0; i<lineCounter; i++){
         for(int j=0; j<node->letterCount; j++){
             c = fgetc(input);
@@ -55,6 +64,7 @@ void secondRead(FILE * input, char ** lines, int lineCounter, lineInfo * head){
         }
         node = node->next;
     }
+    return lines;
 }
 
 int main(void){
@@ -67,26 +77,19 @@ int main(void){
     int lineCounter = firstRead(stream, &head);
     fclose(stream);
 
-                                                                                                        printf("Line sizes are:\n");
-                                                                                                        node = head;
-                                                                                                        while(node != NULL){
-                                                                                                            printf("%d\n", node->letterCount);
-                                                                                                            node = node->next;
-                                                                                                        }
-
-    //Allocate space for each line
-    node = head;
-    char ** lines = malloc(lineCounter*sizeof(char*));
-    for(int i=0; i<lineCounter; i++){
-        lines[i] = malloc(node->letterCount * sizeof(char));
-        node = node->next;
-    }
-
     //Second read through file to store every line
     stream = fopen("odyssey", "r");
-    secondRead(stream, lines, lineCounter, head);
+    char ** lines = secondRead(stream, lineCounter, head);
     fclose(stream);
 
+                                                                                                        printf("Line sizes are:\n");
+                                                                                                        node = head;
+                                                                                                        int i = 0;
+                                                                                                        while(node != NULL){
+                                                                                                            printf("%d. %d\n", i, node->letterCount);
+                                                                                                            node = node->next;
+                                                                                                            i++;
+                                                                                                        }
                                                                                                         for(int i=0; i<lineCounter; i++)
                                                                                                             printf("%s\n", lines[i]);
 
