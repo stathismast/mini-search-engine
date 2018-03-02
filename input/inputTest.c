@@ -1,17 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 
 typedef struct LineInfo{
 	int letterCount;
 	struct LineInfo * next;
 } LineInfo;
-
-typedef struct CharList{
-	char c;
-	struct CharList * next;
-} CharList;
 
 void freeLineInfo(LineInfo * li){
 	if(li == NULL) return;
@@ -19,17 +13,22 @@ void freeLineInfo(LineInfo * li){
 	free(li);
 }
 
-void freeCharList(CharList * cl){
-	if(cl == NULL) return;
-	freeCharList(cl->next);
-	free(cl);
-}
-
 LineInfo * newLineInfo(){
 	LineInfo * node = malloc(sizeof(LineInfo));
 	node->letterCount = 0;
 	node->next = NULL;
 	return node;
+}
+
+typedef struct CharList{
+	char c;
+	struct CharList * next;
+} CharList;
+
+void freeCharList(CharList * cl){
+	if(cl == NULL) return;
+	freeCharList(cl->next);
+	free(cl);
 }
 
 CharList * newCharList(char c){
@@ -46,42 +45,29 @@ void appendToCharList(char c, CharList ** node){
 	}
 }
 
-char * charListToString(CharList * cl){
+int charListLength(CharList * cl){
 	int length = 0;
 	CharList * node = cl;
 	while(node != NULL){
 		length++;
 		node = node->next;
 	}
+	return length;
+}
 
+//Converts a charList to a string
+char * charListToString(CharList * cl){
+	int length = charListLength(cl);
 	char * string = malloc(length * sizeof(char) + 1);
-	node = cl;
+	CharList * node = cl;
+
 	for(int i=0; i<length; i++){
 		string[i] = node->c;
 		node = node->next;
 	}
-	string[length] = 0; //Add null character at the end of the string
+	//Add null character at the end of the string
+	string[length] = 0;
 	return string;
-}
-
-//Returns an int (id) based on the given string.
-//If the string is contains any non-numerical
-//character the return value is negative.
-int stringToInt(char * str){
-	int length = strlen(str);
-	int ret = 0;
-	for(int i=0; i<length; i++){
-		if(str[i] > 47 && str[i] < 58){
-			ret += pow(10, length-1-i) * (str[i]-48);
-		}
-		else{
-			for(int j=0; j<length; j++){
-				printf("-%d-\n", (unsigned char)str[j]);
-			}
-			return -1;
-		}
-	}
-	return ret;
 }
 
 //Returns the number of lines in input file and creates
@@ -89,36 +75,54 @@ int stringToInt(char * str){
 int firstRead(FILE * input, LineInfo ** head){
 	*head = newLineInfo();
 	LineInfo * node = *head;
-	int lineCounter = 0;
+	int lineCounter = 0;		//Counts how many lines are in the file
 	char c;
 
-	CharList * cl = NULL;
-	int isNewLine = 1;
+	CharList * cl = NULL;		//List of characters used to determine whether
+								//the id of each line is correct
+	int isNewLine = 1;			//Integer used as a boolean. Has a value of one
+								//if we are at the start of a new line and need to
+								//check if the id of that line is correct
 
-	while(!feof(input)){
+	while(1){				//Will break when we reach EOF
 		c = fgetc(input);
 		if(c == EOF) break;
-		if(isNewLine)
-			if(c != ' ' && c != '\t' && c != '\n')
+		if(isNewLine){
+			if(c == '\n'){
+				printf("ERROR: Line %d has no content.\n", lineCounter);
+				freeCharList(cl);
+				freeLineInfo(*head);
+				return -1;
+			}
+			if(c != ' ' && c != '\t')
 				if(c > 47 && c < 58){
 					appendToCharList(c, &cl);
 				}
 				else{
 					printf("ERROR: Input file is not of valid format.\n");
+					freeLineInfo(*head);
 					return -1;
 				}
 			else
 				isNewLine = 0;
+		}
 		else
 			node->letterCount++;
 		if(c == '\n'){
 			char * idStr = charListToString(cl);
-			int id = stringToInt(idStr);
+			int id = atoi(idStr);
 			printf("ID: %d\n", id);
+			free(idStr);
 			freeCharList(cl);
 			cl = NULL;
 			if(lineCounter != id){
 				printf("ERROR: IDs are not in order.\n");
+				freeLineInfo(*head);
+				return -1;
+			}
+			if(node->letterCount <= 1){
+				printf("ERROR: Line %d has no content.\n", lineCounter);
+				freeLineInfo(*head);
 				return -1;
 			}
 			lineCounter++;
@@ -179,7 +183,7 @@ int main(void){
 	//First read through file to count lines and line length
 	if ((stream = fopen("odyssey", "r")) == NULL) return -1;
 	int lineCounter = firstRead(stream, &head);
-	if(lineCounter < 1) return -1;
+	if(lineCounter < 1) { fclose(stream); return -1; }
 	fclose(stream);
 
 	//Second read through file to store every line
