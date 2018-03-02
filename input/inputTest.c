@@ -20,20 +20,15 @@ lineInfo * newLineInfo(){
     return node;
 }
 
-int main(void){
-    FILE *stream;
-
-    stream = fopen("odyssey", "r");
-    if (stream == NULL)
-          return -1;
-
-    //firstpass
-    lineInfo * head = newLineInfo();
-    lineInfo * node = head;
+//Returns the number of lines in input file and
+//a list with the lengths for each of those lines
+int firstRead(FILE * input, lineInfo ** head){
+    *head = newLineInfo();
+    lineInfo * node = *head;
     int lineCounter = 0;
     char c;
-    while(!feof(stream)){
-      c = fgetc(stream);
+    while(!feof(input)){
+      c = fgetc(input);
       node->letterCount++;
       if(c == '\n'){
           lineCounter++;
@@ -42,28 +37,15 @@ int main(void){
       }
     }
     printf("First Pass: Read %d lines.\n", lineCounter);
+    return lineCounter;
+}
 
-    printf("Line sizes are:\n");
-    node = head;
-    while(node != NULL){
-        printf("%d\n", node->letterCount);
-        node = node->next;
-    }
-
-    node = head;
-    char ** lines = malloc(lineCounter*sizeof(char*));
-    for(int i=0; i<lineCounter; i++){
-        lines[i] = malloc(node->letterCount * sizeof(char));
-        node = node->next;
-    }
-    fclose(stream);
-
-    //second pass
-    stream = fopen("odyssey", "r");
-    node = head;
+void secondRead(FILE * input, char ** lines, int lineCounter, lineInfo * head){
+    lineInfo * node = head;
+    char c;
     for(int i=0; i<lineCounter; i++){
         for(int j=0; j<node->letterCount; j++){
-            c = fgetc(stream);
+            c = fgetc(input);
             if(c != '\n'){
                 lines[i][j] = c;
             }
@@ -73,15 +55,45 @@ int main(void){
         }
         node = node->next;
     }
+}
 
-    for(int i=0; i<lineCounter; i++)
-        printf("%s\n", lines[i]);
+int main(void){
+    FILE *stream;
+    lineInfo * head, * node;
+
+
+    //First read through file to count lines and line length
+    if ((stream = fopen("odyssey", "r")) == NULL) return -1;
+    int lineCounter = firstRead(stream, &head);
+    fclose(stream);
+
+                                                                                                        printf("Line sizes are:\n");
+                                                                                                        node = head;
+                                                                                                        while(node != NULL){
+                                                                                                            printf("%d\n", node->letterCount);
+                                                                                                            node = node->next;
+                                                                                                        }
+
+    //Allocate space for each line
+    node = head;
+    char ** lines = malloc(lineCounter*sizeof(char*));
+    for(int i=0; i<lineCounter; i++){
+        lines[i] = malloc(node->letterCount * sizeof(char));
+        node = node->next;
+    }
+
+    //Second read through file to store every line
+    stream = fopen("odyssey", "r");
+    secondRead(stream, lines, lineCounter, head);
+    fclose(stream);
+
+                                                                                                        for(int i=0; i<lineCounter; i++)
+                                                                                                            printf("%s\n", lines[i]);
 
     for(int i=0; i<lineCounter; i++)
         free(lines[i]);
     free(lines);
     freeLineInfo(head);
-    fclose(stream);
 
     return 0;
 }
