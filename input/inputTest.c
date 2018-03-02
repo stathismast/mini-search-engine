@@ -78,36 +78,40 @@ int firstRead(FILE * input, LineInfo ** head){
 	int lineCounter = 0;		//Counts how many lines are in the file
 	char c;
 
-	CharList * cl = NULL;		//List of characters used to determine whether
-								//the id of each line is correct
-	int isNewLine = 1;			//Integer used as a boolean. Has a value of one
-								//if we are at the start of a new line and need to
-								//check if the id of that line is correct
+	//List of characters used to determine whether
+	//the id of each line is correct
+	CharList * cl = NULL;
+
+	//Integer used as a boolean. Has a value of one
+	//if we are at the start of a new line and need to
+	//check if the id of that line is correct
+	int isNewLine = 1;
 
 	while(1){				//Will break when we reach EOF
 		c = fgetc(input);
 		if(c == EOF) break;
 		if(isNewLine){
-			if(c == '\n'){
+			if(c == '\n'){	//If we get a new line while expecting to read the id, the current line has no content
 				printf("ERROR: Line %d has no content.\n", lineCounter);
 				freeCharList(cl);
 				freeLineInfo(*head);
 				return -1;
 			}
 			if(c != ' ' && c != '\t')
-				if(c > 47 && c < 58){
+				if(c > 47 && c < 58){	//If the char we read is a numeral, we append it to out charList
 					appendToCharList(c, &cl);
 				}
-				else{
+				else{	//If the char is not a numeral, the input is invalid
 					printf("ERROR: Input file is not of valid format.\n");
 					freeLineInfo(*head);
 					return -1;
 				}
-			else
+			else //When we get a whitespace character, the id part of the line has been read
 				isNewLine = 0;
 		}
-		else
+		else	//If 'isNewLine' is FALSE we just increase the counter of characters for this line
 			node->letterCount++;
+
 		if(c == '\n'){
 			char * idStr = charListToString(cl);
 			int id = atoi(idStr);

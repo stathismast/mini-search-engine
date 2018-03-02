@@ -1,2 +1,2 @@
 all:
-	gcc -g inputTest.c -lm
+	gcc -g inputTest.c
