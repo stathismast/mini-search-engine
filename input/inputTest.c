@@ -38,6 +38,7 @@ CharList * newCharList(char c){
 	return node;
 }
 
+//Adds the given letter at the end of a charList
 void appendToCharList(char c, CharList ** node){
 	if(*node == NULL) *node = newCharList(c);
 	else{
@@ -45,6 +46,7 @@ void appendToCharList(char c, CharList ** node){
 	}
 }
 
+//Returns the length of a CharList
 int charListLength(CharList * cl){
 	int length = 0;
 	CharList * node = cl;
@@ -72,6 +74,7 @@ char * charListToString(CharList * cl){
 
 //Returns the number of lines in input file and creates
 //a list with the lengths for each of those lines
+//Disclaimer: A line is considered only if it has '\n' at the end of it
 int firstRead(FILE * input, LineInfo ** head){
 	*head = newLineInfo();
 	LineInfo * node = *head;
@@ -82,7 +85,7 @@ int firstRead(FILE * input, LineInfo ** head){
 	//the id of each line is correct
 	CharList * cl = NULL;
 
-	//Integer used as a boolean. Has a value of one
+	//Integer used as a boolean. Has a value of '1'
 	//if we are at the start of a new line and need to
 	//check if the id of that line is correct
 	int isNewLine = 1;
@@ -113,18 +116,18 @@ int firstRead(FILE * input, LineInfo ** head){
 			node->letterCount++;
 
 		if(c == '\n'){
-			char * idStr = charListToString(cl);
-			int id = atoi(idStr);
-			printf("ID: %d\n", id);
-			free(idStr);
-			freeCharList(cl);
-			cl = NULL;
-			if(lineCounter != id){
-				printf("ERROR: IDs are not in order.\n");
+			char * idStr = charListToString(cl);	//Convert CharList to string
+			int id = atoi(idStr);					//Convert string to integer
+			free(idStr);							//Deallocate string
+			freeCharList(cl);						//Deallocate CharList
+			cl = NULL;								//Reset cl to NULL to be used by the CharList for the next line
+
+			if(lineCounter != id){	//Check if the id of the line is correct
+				printf("ERROR: IDs are not in order. (Line %d)\n", lineCounter);
 				freeLineInfo(*head);
 				return -1;
 			}
-			if(node->letterCount <= 1){
+			if(node->letterCount <= 1){ //If there is nothing after the id of a line
 				printf("ERROR: Line %d has no content.\n", lineCounter);
 				freeLineInfo(*head);
 				return -1;
@@ -136,9 +139,13 @@ int firstRead(FILE * input, LineInfo ** head){
 		}
 	}
 	printf("First Pass: Read %d lines.\n", lineCounter);
+	freeCharList(cl);
 	return lineCounter;
 }
 
+
+//This function goes through the file knowing how
+//many lines it has and the length of each line
 char ** secondRead(FILE * input, int lineCounter, LineInfo * head){
 	char c, ** lines;
 	LineInfo * node = head;
@@ -156,75 +163,127 @@ char ** secondRead(FILE * input, int lineCounter, LineInfo * head){
 	node = head;
 	for(int i=0; i<lineCounter; i++){
 		for(int j=0; j<node->letterCount; j++){
-
+			//If this is a new line
 			if(isNewLine){
-				//Consume characters that represent the id
+				//Consume characters that represent the id because
+				//it was accounted for in the first read through
 				do{
 					c = fgetc(input);
 				}while (c != ' ' && c != '\t');
 				isNewLine = 0;
 			}
-
+			//After the id has been consumed we can store the line
 			c = fgetc(input);
 			if(c != '\n'){
 				lines[i][j] = c;
 			}
 			else{
+				//When we read the new line char, that means the line is over
+				//so we add a null character at the end of the string string
 				lines[i][j] = 0;
 				isNewLine = 1;
 			}
 		}
-		node = node->next;
+		node = node->next;	//Get the LineInfo node for the next line
 	}
+	return lines;	//Return a pointer to the stored lines
+}
+
+//Read through the given file to count retrieve every line
+//Returns and array of strings and saves the total number of lines in 'lineCounter'
+char ** readInputFile(char * fileName, int * lineCounter){
+	FILE *stream;
+	LineInfo * head;
+
+	//First read through file to count lines, determine the
+	//length of each line and check if the ids are correct
+	if ((stream = fopen(fileName, "r")) == NULL){
+		printf("ERROR: File not found.\n");
+		return NULL;
+	}
+	*lineCounter = firstRead(stream, &head);
+	if(*lineCounter < 1) { fclose(stream); printf("ERROR: Input file has no content.\n"); return NULL; }
+	fclose(stream);
+
+	//Second read through file to allocate space for and store every line
+	if ((stream = fopen(fileName, "r")) == NULL){
+		printf("ERROR: File not found.\n");
+		freeLineInfo(head);
+		return NULL;
+	}
+	char ** lines = secondRead(stream, *lineCounter, head);
+	fclose(stream);
+
+	freeLineInfo(head);
 	return lines;
 }
 
-int main(void){
-	FILE *stream;
-	LineInfo * head, * node;
+int manageArguments(int argc, char *argv[], char * fileName, int * k){
+	int gotInputFile = 0;
+	int argumentError = 0;
+	int invalidKArgument = 0;
+	if(argc > 5){
+		printf("ERROR: Too many arguments.\n");
+		printf("Usage: ./minisearch -i docfile -k K\nAnguments can be given in any order and only '-i' is necessary. 'K' defaults to 10.\n");
+		return -1;
+	}
+	for(int i=1; i<argc; i++)
+		if(strcmp(argv[i],"-i") == 0){
+			if(argc > i+1 && !gotInputFile){
+				strcpy(fileName,argv[i+1]);
+				gotInputFile = 1;
+				i++;
+			}
+			else{
+				argumentError = 1;
+				break;
+			}
+		}
+		else if(strcmp(argv[i],"-k") == 0){
+			if(argc > i+1){
+				*k = atoi(argv[i+1]);
+				if(*k < 1) {invalidKArgument = 1; break;}	//If K is 0 or negative or not a numeral
+				i++;
+			}
+			else{
+				argumentError = 1;
+				break;
+			}
+		}
+	if(invalidKArgument){
+		printf("ERROR: Invalid '-k K' argument. 'K' should be a number greater than 0.\n");
+		printf("Usage: ./minisearch -i docfile -k K\nAnguments can be given in any order and only '-i' is necessary. 'K' defaults to 10.\n");
+		return -1;
+	}
+	if(argumentError || !gotInputFile){
+		printf("ERROR: Invalid arguments.\n");
+		printf("Usage: ./minisearch -i docfile -k K\nAnguments can be given in any order and only '-i' is necessary. 'K' defaults to 10.\n");
+		return -1;
+	}
+}
 
+int main(int argc, char *argv[]){
 
-	//First read through file to count lines and line length
-	if ((stream = fopen("odyssey", "r")) == NULL) return -1;
-	int lineCounter = firstRead(stream, &head);
-	if(lineCounter < 1) { fclose(stream); return -1; }
-	fclose(stream);
+	char fileName[80];
+	int k = 10;
 
-	//Second read through file to store every line
-	stream = fopen("odyssey", "r");
-	char ** lines = secondRead(stream, lineCounter, head);
-	fclose(stream);
+	if(manageArguments(argc, argv, fileName, &k) < 0){
+		return -1;
+	}
 
-													printf("Line sizes are:\n");
-													node = head;
-													int i = 0;
-													while(node != NULL){
-														printf("%d. %d\n", i, node->letterCount);
-														node = node->next;
-														i++;
-													}
+	printf("Name: -%s- and K: %d\n", fileName, k);
+
+	int lineCounter;
+	char ** lines;
+	if((lines = readInputFile(fileName, &lineCounter)) == NULL){
+		return -1;
+	}
+
 													for(int i=0; i<lineCounter; i++)
-														printf("%d. %s\n", i, lines[i]);
+														printf("(%d)%d. %s\n",(int)strlen(lines[i]), i, lines[i]);
 
 	for(int i=0; i<lineCounter; i++)
 		free(lines[i]);
 	free(lines);
-	freeLineInfo(head);
-
-	CharList * cl = NULL;
-	appendToCharList('a', &cl);
-	appendToCharList('p', &cl);
-	appendToCharList('p', &cl);
-	appendToCharList('e', &cl);
-	appendToCharList('n', &cl);
-	appendToCharList('d', &cl);
-
-	char * str = charListToString(cl);
-	printf("Returned string is '%s'\n", str);
-	printf("strlen says its %d characters long.\n", (int)strlen(str));
-
-	free(str);
-	freeCharList(cl);
-
 	return 0;
 }
