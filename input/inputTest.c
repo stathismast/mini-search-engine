@@ -22,7 +22,8 @@ int main(int argc, char *argv[]){
 
 													for(int i=0; i<lineCounter; i++)
 														printf("(%d)%d. %s\n",(int)strlen(lines[i]), i, lines[i]);
-
+													for(int i=0; i<lineCounter; i++)
+														printWords(lines[i]);
 	for(int i=0; i<lineCounter; i++)
 		free(lines[i]);
 	free(lines);

@@ -1,34 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "trie.h"
+#include "inputManager.h"
 
 #include <string.h>
 
-int main(void){
-	printf("Hello World!\n");
+int main(int argc, char *argv[]){
+
 	TrieNode * trie = NULL;
-	for(int i=0; i<3; i++){
-		for(int j=0; j<3; j++){
-			addWord("abcdefg", j, &trie);
-			addWord("ackbar", j, &trie);
-			addWord("ackbay", j, &trie);
-			addWord("abcDEFG", j, &trie);
-			addWord("free", j, &trie);
-			addWord("freedom", j, &trie);
-			addWord("a", j, &trie);
-			addWord("dom", j, &trie);
-		}
+	char fileName[80];
+	int k = 10;
+
+	if(manageArguments(argc, argv, fileName, &k) < 0){
+		return -1;
 	}
+
+	int lineCounter;
+	char ** lines;
+	if((lines = readInputFile(fileName, &lineCounter)) == NULL){
+		return -1;
+	}
+
+	//Print every line
+	for(int i=0; i<lineCounter; i++)
+		printf("(%d)%d. %s\n",(int)strlen(lines[i]), i, lines[i]);
+
+	//Insert every word to out trie
+	for(int i=0; i<lineCounter; i++)
+		addWordsIntoTrie(lines[i], &trie);
+
 	printTrie(trie);
-	printf("Is 'abcdefg' a word? %d\n", checkIfWordExists("abcdefg",trie));
-	printf("Is 'ackbar' a word? %d\n", checkIfWordExists("ackbar",trie));
-	printf("Is 'abcDEFG' a word? %d\n", checkIfWordExists("abcDEFG",trie));
-	printf("Is 'free' a word? %d\n", checkIfWordExists("free",trie));
-	printf("Is 'fredo' a word? %d\n", checkIfWordExists("fredo",trie));
-	printf("Is 'abcdef' a word? %d\n", checkIfWordExists("abcdef",trie));
-	printf("Is 'ackbay' a word? %d\n", checkIfWordExists("ackbay",trie));
-	printf("Is 'abcDEfg' a word? %d\n", checkIfWordExists("abcDEfg",trie));
-	printf("Is 'freedom' a word? %d\n", checkIfWordExists("freedom",trie));
-	printf("Is 'a' a word? %d\n", checkIfWordExists("a",trie));
+
+	//Check to make sure that every word has been properly added in the trie
+	// for(int i=0; i<lineCounter; i++)
+	// 	validateTrieInsertion(lines[i], &trie);
+
+	//Deallocate space for stored lines and trie
+	for(int i=0; i<lineCounter; i++)
+		free(lines[i]);
+	free(lines);
+	freeTrie(trie);
+
 	return 0;
 }

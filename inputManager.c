@@ -133,7 +133,7 @@ char ** readInputFile(char * fileName, int * lineCounter){
 		return NULL;
 	}
 	*lineCounter = firstRead(stream, &head);
-	if(*lineCounter < 1) { fclose(stream); printf("ERROR: Input file has no content.\n"); return NULL; }
+	if(*lineCounter < 1) { fclose(stream); freeLineInfo(head); printf("ERROR: Input file has no content.\n"); return NULL; }
 	fclose(stream);
 
 	//Second read through file to allocate space for and store every line
@@ -215,10 +215,32 @@ void addWordsIntoTrie(char * line, TrieNode ** trie){
 		string = malloc(end - start + 1);
 		memcpy(string, &line[start], end - start);
 		string[end - start] = 0;	//Add null character at the end
-		printf("-%s- %d\n", string, (int)strlen(string));
+		//printf("-%s- %d\n", string, (int)strlen(string));
 		addWord(string, 0, trie);
 		free(string);
 
 		start = end;
 	}
+}
+
+void validateTrieInsertion(char * line, TrieNode ** trie){
+	int start = 0;
+	int end;
+
+	int count = 0;
+
+	char * string;
+
+	while(line[start] != 0 && findNextWord(&start, &end, line)){
+		string = malloc(end - start + 1);
+		memcpy(string, &line[start], end - start);
+		string[end - start] = 0;	//Add null character at the end
+		//printf("Searching for %s...\n", string);
+		if(!checkIfWordExists(string, *trie)) count++;
+		free(string);
+
+		start = end;
+	}
+
+	printf("Words that aren't included: %d\n", count);
 }

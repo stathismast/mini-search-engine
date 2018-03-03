@@ -13,6 +13,15 @@ TrieNode * newTrieNode(char letter){
 	return node;
 }
 
+//Deallocate space use for a trie and all of its nodes and posting lists
+void freeTrie(TrieNode * trie){
+	if(trie == NULL) return;
+	freeTrie(trie->nextLetter);
+	freeTrie(trie->otherLetter);
+	freePostingList(trie->postingList);
+	free(trie);
+}
+
 //Silly print function for testing purposes. Should be deleted in final version
 void printTrie(TrieNode * node){
 	if(node == NULL) return;
@@ -42,9 +51,8 @@ void addWord(char * word, int id, TrieNode ** rootPointer){
 		}
 		addWord(word+1, id, &((*rootPointer)->nextLetter));	//Call this function for the rest of the letters
 	}
-	else if(word[0] == (*rootPointer)->letter){
-		//If this letter of the given word already has a node
-		if(strlen(word) == 1){				//Check if this was the last letter of the word
+	else if(word[0] == (*rootPointer)->letter){	//If this letter of the given word already has a node
+		if(strlen(word) == 1){		//Check if this was the last letter of the word
 			addToPostingList(id, &((*rootPointer)->postingList));	//If so add the nesessary info to its posting list
 			return;
 		}
@@ -55,6 +63,7 @@ void addWord(char * word, int id, TrieNode ** rootPointer){
 	}
 }
 
+//Searches the trie to determine if the given word exists in the trie
 int checkIfWordExists(char * word, TrieNode * node){
 	if(strlen(word) == 0) return 0; //If the given word has a length of 0, it clearly isn't in the trie
 	if(node == NULL) return 0;		//If the given node is NULL, it means that the function was called

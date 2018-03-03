@@ -13,6 +13,7 @@ typedef struct TrieNode{
 #endif //TRIENODE_H
 
 TrieNode * newTrieNode(char letter);
+void freeTrie(TrieNode * trie);
 void printTrieNode(TrieNode * node);
 
 void addWord(char * word, int id, TrieNode ** rootPointer);

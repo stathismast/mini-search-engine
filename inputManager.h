@@ -7,5 +7,6 @@ int firstRead(FILE * input, LineInfo ** head);
 char ** secondRead(FILE * input, int lineCounter, LineInfo * head);
 char ** readInputFile(char * fileName, int * lineCounter);
 int manageArguments(int argc, char *argv[], char * fileName, int * k);
-void printWords(char * str);
 int findNextWord(int * start, int * end, char * line);
+void addWordsIntoTrie(char * line, TrieNode ** trie);
+void validateTrieInsertion(char * line, TrieNode ** trie);

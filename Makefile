@@ -1,5 +1,5 @@
 all:
-	gcc main.c trie.c postingList.c
+	gcc -g main.c trie.c postingList.c inputManager.c charList.c lineInfo.c
 
 # OBJS = main.o trieNode.o postingList.o
 # SOURCE = main.c trieNode.c postingList.c
