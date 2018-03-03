@@ -7,7 +7,7 @@
 //a list with the lengths for each of those lines
 //Disclaimer: A line is considered only if it has '\n' at the end of it
 int firstRead(FILE * input, LineInfo ** head){
-	*head = newLineInfo();
+	addToLineInfo(head);
 	LineInfo * node = *head;
 	int lineCounter = 0;		//Counts how many lines are in the file
 	char c;
@@ -64,8 +64,7 @@ int firstRead(FILE * input, LineInfo ** head){
 				return -1;
 			}
 			lineCounter++;
-			node->next = newLineInfo();
-			node = node->next;
+			node = addToLineInfo(&node);
 			isNewLine = 1;
 		}
 	}
@@ -124,7 +123,7 @@ char ** secondRead(FILE * input, int lineCounter, LineInfo * head){
 //Returns and array of strings and saves the total number of lines in 'lineCounter'
 char ** readInputFile(char * fileName, int * lineCounter){
 	FILE *stream;
-	LineInfo * head;
+	LineInfo * head = NULL;
 
 	//First read through file to count lines, determine the
 	//length of each line and check if the ids are correct
@@ -205,7 +204,7 @@ int findNextWord(int * start, int * end, char * line){
 	return 1;
 }
 
-void addWordsIntoTrie(char * line, TrieNode ** trie){
+void addWordsIntoTrie(char * line, int id, TrieNode ** trie){
 	int start = 0;
 	int end;
 
@@ -216,7 +215,7 @@ void addWordsIntoTrie(char * line, TrieNode ** trie){
 		memcpy(string, &line[start], end - start);
 		string[end - start] = 0;	//Add null character at the end
 		//printf("-%s- %d\n", string, (int)strlen(string));
-		addWord(string, 0, trie);
+		addWord(string, id, trie);
 		free(string);
 
 		start = end;

@@ -9,11 +9,10 @@ LineInfo * newLineInfo(){
 	return node;
 }
 
-void addToLineInfo(LineInfo ** node){
-	if(*node == NULL) *node = newLineInfo();
-	else{
-		addToLineInfo(&((*node)->next));
-	}
+//Increases the length of a LineInfo list and returns a pointer to the newest node
+LineInfo * addToLineInfo(LineInfo ** node){
+	if(*node == NULL) { *node = newLineInfo(); return *node; }
+	else return addToLineInfo(&((*node)->next));
 }
 
 void freeLineInfo(LineInfo * li){

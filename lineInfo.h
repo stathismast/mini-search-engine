@@ -10,4 +10,4 @@ typedef struct LineInfo{
 
 void freeLineInfo(LineInfo * li);
 LineInfo * newLineInfo();
-void addToLineInfo(LineInfo ** node);
+LineInfo * addToLineInfo(LineInfo ** node);

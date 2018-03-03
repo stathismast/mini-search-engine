@@ -27,13 +27,13 @@ int main(int argc, char *argv[]){
 
 	//Insert every word to out trie
 	for(int i=0; i<lineCounter; i++)
-		addWordsIntoTrie(lines[i], &trie);
+		addWordsIntoTrie(lines[i], i, &trie);
 
 	printTrie(trie);
 
 	//Check to make sure that every word has been properly added in the trie
-	// for(int i=0; i<lineCounter; i++)
-	// 	validateTrieInsertion(lines[i], &trie);
+	for(int i=0; i<lineCounter; i++)
+		validateTrieInsertion(lines[i], &trie);
 
 	//Deallocate space for stored lines and trie
 	for(int i=0; i<lineCounter; i++)
