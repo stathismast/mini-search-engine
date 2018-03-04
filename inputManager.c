@@ -148,6 +148,7 @@ char ** readInputFile(char * fileName, int * lineCounter){
 	return lines;
 }
 
+//Manages arguments and checks for errors
 int manageArguments(int argc, char *argv[], char * fileName, int * k){
 	int gotInputFile = 0;
 	int argumentError = 0;
@@ -192,6 +193,8 @@ int manageArguments(int argc, char *argv[], char * fileName, int * k){
 	}
 }
 
+//Given a string, and a starting point, this function sets 'start' and 'end'
+//at the start and the end of the first word after the given starting point
 int findNextWord(int * start, int * end, char * line){
 	while(line[*start] == ' ' || line[*start] == '\t')
 		(*start)++;
@@ -204,6 +207,7 @@ int findNextWord(int * start, int * end, char * line){
 	return 1;
 }
 
+//Adds words from a string to a given trie
 void addWordsIntoTrie(char * line, int id, TrieNode ** trie){
 	int start = 0;
 	int end;
@@ -222,6 +226,7 @@ void addWordsIntoTrie(char * line, int id, TrieNode ** trie){
 	}
 }
 
+//Checks to make sure that every word has been properly added into the trie
 void validateTrieInsertion(char * line, TrieNode ** trie){
 	int start = 0;
 	int end;
@@ -234,7 +239,7 @@ void validateTrieInsertion(char * line, TrieNode ** trie){
 		string = malloc(end - start + 1);
 		memcpy(string, &line[start], end - start);
 		string[end - start] = 0;	//Add null character at the end
-		//printf("Searching for %s...\n", string);
+		// printf("Searching for %s...\n", string);
 		if(!checkIfWordExists(string, *trie)) count++;
 		free(string);
 
