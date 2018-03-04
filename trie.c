@@ -44,30 +44,30 @@ void addWord(char * word, int id, TrieNode ** rootPointer){
 
 	//If this node is NULL we should first create a new node
 	if(*rootPointer == NULL){
-		*rootPointer = newTrieNode(word[0]);//Create new node
-		if(strlen(word) == 1){				//Check if this was the last letter of the word
+		*rootPointer = newTrieNode(word[0]);						//Create new node
+		if(strlen(word) == 1){										//Check if this was the last letter of the word
 			addToPostingList(id, &((*rootPointer)->postingList));	//If so add the nesessary info to its posting list
 			return;
 		}
-		addWord(word+1, id, &((*rootPointer)->nextLetter));	//Call this function for the rest of the letters
+		addWord(word+1, id, &((*rootPointer)->nextLetter));			//Call this function for the rest of the letters
 	}
-	else if(word[0] == (*rootPointer)->letter){	//If this letter of the given word already has a node
-		if(strlen(word) == 1){		//Check if this was the last letter of the word
+	else if(word[0] == (*rootPointer)->letter){						//If this letter of the given word already has a node
+		if(strlen(word) == 1){										//Check if this was the last letter of the word
 			addToPostingList(id, &((*rootPointer)->postingList));	//If so add the nesessary info to its posting list
 			return;
 		}
-		addWord(word+1, id, &((*rootPointer)->nextLetter));	//Call this function for the rest of the letters
+		addWord(word+1, id, &((*rootPointer)->nextLetter));			//Call this function for the rest of the letters
 	}
-	else{ //If the letters don't match, maybe the given word will match to a different trie branch
-		addWord(word, id, &((*rootPointer)->otherLetter)); 	//Call this function for the same letter on a differnt trie branch
+	else{ 															//If the letters don't match, maybe the given word will match to a different trie branch
+		addWord(word, id, &((*rootPointer)->otherLetter)); 			//Call this function for the same letter on a differnt trie branch
 	}
 }
 
 //Searches the trie to determine if the given word exists in the trie
 int checkIfWordExists(char * word, TrieNode * node){
-	if(strlen(word) == 0) return 0; //If the given word has a length of 0, it clearly isn't in the trie
-	if(node == NULL) return 0;		//If the given node is NULL, it means that the function was called
-									//recursively for a NULL node, meaning that the given word isn't in the trie
+	if(strlen(word) == 0) return 0; 		//If the given word has a length of 0, it clearly isn't in the trie
+	if(node == NULL) return 0;				//If the given node is NULL, it means that the function was called
+											//recursively for a NULL node, meaning that the given word isn't in the trie
 
 	//If the next letter of the word matches that of the node
 	if(word[0] == node->letter){

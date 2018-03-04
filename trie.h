@@ -7,7 +7,7 @@ typedef struct TrieNode{
 	char letter;
 	struct TrieNode * otherLetter; //A letter of a different word
 	struct TrieNode * nextLetter;  //The letter following this one
-	PostingListNode * postingList;     //Posting list for the word ending in this letter.
+	PostingListHead * postingList;     //Posting list for the word ending in this letter.
 } TrieNode;
 
 #endif //TRIENODE_H

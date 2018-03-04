@@ -1,6 +1,12 @@
 #ifndef POSTINGLIST_H
 #define POSTINGLIST_H
 
+typedef struct PostingListHead{
+	int documentFreq;
+
+	struct PostingListNode * next;
+} PostingListHead;
+
 typedef struct PostingListNode{
 	int id;
 	int count;
@@ -10,7 +16,9 @@ typedef struct PostingListNode{
 
 #endif //POSTINGLIST_H
 
-void freePostingList(PostingListNode * pl);
-void printPostingList(PostingListNode * list);
-void addToPostingList(int id, PostingListNode ** node);
+void freePostingList(PostingListHead * head);
+void freePostingListNode(PostingListNode * node);
+void printPostingList(PostingListHead * head);
+void printPostingListNode(PostingListNode * node);
+void addToPostingList(int id, PostingListHead ** head);
 PostingListNode ** getPosting(int id, PostingListNode ** head);
