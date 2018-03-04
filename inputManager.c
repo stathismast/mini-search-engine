@@ -208,11 +208,12 @@ int findNextWord(int * start, int * end, char * line){
 }
 
 //Adds words from a string to a given trie
-void addWordsIntoTrie(char * line, int id, TrieNode ** trie){
+int addWordsIntoTrie(char * line, int id, TrieNode ** trie){
 	int start = 0;
 	int end;
-
 	char * string;
+
+	int wordCounter = 0;
 
 	while(line[start] != 0 && findNextWord(&start, &end, line)){
 		string = malloc(end - start + 1);
@@ -223,7 +224,9 @@ void addWordsIntoTrie(char * line, int id, TrieNode ** trie){
 		free(string);
 
 		start = end;
+		wordCounter++;
 	}
+	return wordCounter;
 }
 
 //Checks to make sure that every word has been properly added into the trie
