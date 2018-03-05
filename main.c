@@ -2,17 +2,9 @@
 #include <stdlib.h>
 #include "trie.h"
 #include "inputManager.h"
+#include "commands.h"
 
 #include <string.h>
-
-char * getCommand(){
-	char * command = NULL;
-	size_t size;
-	if(getline(&command, &size, stdin) == -1) {
-		return NULL;
-	}
-	return command;
-}
 
 int main(int argc, char *argv[]){
 
@@ -39,8 +31,6 @@ int main(int argc, char *argv[]){
 	for(int i=0; i<lineCounter; i++)
 		wordCounter[i] = addWordsIntoTrie(lines[i], i, &trie);
 
-	printTrie(trie);
-
 	for(int i=0; i<lineCounter; i++)
 		printf("Line %d has %d words.\n", i, wordCounter[i]);
 
@@ -48,25 +38,7 @@ int main(int argc, char *argv[]){
 	for(int i=0; i<lineCounter; i++)
 		validateTrieInsertion(lines[i], &trie);
 
-	//Command input loop
-	while(1){
-		char * command = getCommand();
-		char exitCommand[7] = "/exit"; exitCommand[5] = '\n'; exitCommand[6] = 0;
-		if(command == NULL || strcmp(command, exitCommand) == 0){
-			free(command);
-			break;
-		}
-		else if(strcmp(strtok(command," \t\n"), "/df") == 0){
-			char * word;
-			if((word = strtok(NULL, " \t\n")) == NULL)
-				for(int i=0; i<lineCounter; i++)
-					df(trie);
-			else
-				do printf("%s %d\n", word, getDocumentFrequency(word, trie)); //df(word, &trie);
-				while((word = strtok(NULL, " \t\n")) != NULL);
-		}
-		free(command);
-	}
+	commandInputLoop(lineCounter, trie);
 
 	//Deallocate space for stored lines and trie
 	for(int i=0; i<lineCounter; i++)
