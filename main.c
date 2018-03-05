@@ -60,9 +60,9 @@ int main(int argc, char *argv[]){
 			char * word;
 			if((word = strtok(NULL, " \t\n")) == NULL)
 				for(int i=0; i<lineCounter; i++)
-					df(lines[i], &trie);
+					df(trie);
 			else
-				do df(word, &trie);
+				do printf("%s %d\n", word, getDocumentFrequency(word, trie)); //df(word, &trie);
 				while((word = strtok(NULL, " \t\n")) != NULL);
 		}
 		free(command);

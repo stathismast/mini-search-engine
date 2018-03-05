@@ -13,3 +13,4 @@ void freeCharList(CharList * cl);
 void appendToCharList(char c, CharList ** node);
 int charListLength(CharList * cl);
 char * charListToString(CharList * cl);
+void deleteLastLetter(CharList ** cl);

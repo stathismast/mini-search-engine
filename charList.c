@@ -49,3 +49,13 @@ char * charListToString(CharList * cl){
 	string[length] = 0;
 	return string;
 }
+
+void deleteLastLetter(CharList ** cl){
+	if(*cl == NULL) return;
+	if((*cl)->next != NULL)
+		deleteLastLetter(&(*cl)->next);
+	else{
+		free(*cl);
+		*cl = NULL;
+	}
+}

@@ -1,4 +1,5 @@
 #include "postingList.h"
+#include "charList.h"
 
 #ifndef TRIENODE_H
 #define TRIENODE_H
@@ -22,4 +23,5 @@ int addWordsIntoTrie(char * line, int id, TrieNode ** trie);
 int checkIfWordExists(char * word, TrieNode * node);
 void validateTrieInsertion(char * line, TrieNode ** trie);
 int getDocumentFrequency(char * word, TrieNode * node);
-void df(char * line, TrieNode ** trie);
+void df(TrieNode * trie);
+void searchForWords(CharList * word, TrieNode * node);

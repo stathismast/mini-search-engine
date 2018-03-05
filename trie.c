@@ -171,20 +171,22 @@ int getDocumentFrequency(char * word, TrieNode * node){
 	}
 }
 
-void df(char * line, TrieNode ** trie){
-	int start = 0;
-	int end;
+void df(TrieNode * trie){
+	CharList * word = NULL;
+	searchForWords(word, trie);
+	freeCharList(word);
+}
 
-	char * string;
+void searchForWords(CharList * word, TrieNode * node){
+	if(node == NULL) return;
 
-	while(line[start] != 0 && findNextWord(&start, &end, line)){
-		string = malloc(end - start + 1);
-		memcpy(string, &line[start], end - start);
-		string[end - start] = 0;	//Add null character at the end
-		// printf("Searching for %s...\n", string);
-		printf("%s %d\n", string, getDocumentFrequency(string, *trie));
-		free(string);
-
-		start = end;
+	appendToCharList(node->letter, &word);
+	if(node->postingList != NULL){
+		char * wordStr =  charListToString(word);
+		printf("%s %d\n", wordStr, node->postingList->documentFreq);
+		free(wordStr);
 	}
+	searchForWords(word, node->nextLetter);
+	deleteLastLetter(&word);
+	searchForWords(word, node->otherLetter);
 }
