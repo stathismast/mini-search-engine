@@ -181,6 +181,9 @@ int manageArguments(int argc, char *argv[], char * fileName, int * k){
 				break;
 			}
 		}
+		else{
+			argumentError = 1;
+		}
 	if(invalidKArgument){
 		printf("ERROR: Invalid '-k K' argument. 'K' should be a number greater than 0.\n");
 		printf("Usage: ./minisearch -i docfile -k K\nAnguments can be given in any order and only '-i' is necessary. 'K' defaults to 10.\n");
@@ -191,63 +194,4 @@ int manageArguments(int argc, char *argv[], char * fileName, int * k){
 		printf("Usage: ./minisearch -i docfile -k K\nAnguments can be given in any order and only '-i' is necessary. 'K' defaults to 10.\n");
 		return -1;
 	}
-}
-
-//Given a string, and a starting point, this function sets 'start' and 'end'
-//at the start and the end of the first word after the given starting point
-int findNextWord(int * start, int * end, char * line){
-	while(line[*start] == ' ' || line[*start] == '\t')
-		(*start)++;
-	if(line[*start] == 0) return 0;
-
-	*end = *start;
-	while(line[*end] != ' ' && line[*end] != '\t' && line[*end] != 0)
-		(*end)++;
-
-	return 1;
-}
-
-//Adds words from a string to a given trie
-int addWordsIntoTrie(char * line, int id, TrieNode ** trie){
-	int start = 0;
-	int end;
-	char * string;
-
-	int wordCounter = 0;
-
-	while(line[start] != 0 && findNextWord(&start, &end, line)){
-		string = malloc(end - start + 1);
-		memcpy(string, &line[start], end - start);
-		string[end - start] = 0;	//Add null character at the end
-		//printf("-%s- %d\n", string, (int)strlen(string));
-		addWord(string, id, trie);
-		free(string);
-
-		start = end;
-		wordCounter++;
-	}
-	return wordCounter;
-}
-
-//Checks to make sure that every word has been properly added into the trie
-void validateTrieInsertion(char * line, TrieNode ** trie){
-	int start = 0;
-	int end;
-
-	int count = 0;
-
-	char * string;
-
-	while(line[start] != 0 && findNextWord(&start, &end, line)){
-		string = malloc(end - start + 1);
-		memcpy(string, &line[start], end - start);
-		string[end - start] = 0;	//Add null character at the end
-		// printf("Searching for %s...\n", string);
-		if(!checkIfWordExists(string, *trie)) count++;
-		free(string);
-
-		start = end;
-	}
-
-	printf("Words that aren't included: %d\n", count);
 }

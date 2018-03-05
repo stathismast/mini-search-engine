@@ -56,6 +56,15 @@ int main(int argc, char *argv[]){
 			free(command);
 			break;
 		}
+		else if(strcmp(strtok(command," \t\n"), "/df") == 0){
+			char * word;
+			if((word = strtok(NULL, " \t\n")) == NULL)
+				for(int i=0; i<lineCounter; i++)
+					df(lines[i], &trie);
+			else
+				do df(word, &trie);
+				while((word = strtok(NULL, " \t\n")) != NULL);
+		}
 		free(command);
 	}
 

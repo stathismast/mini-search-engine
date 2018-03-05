@@ -14,8 +14,12 @@ typedef struct TrieNode{
 
 TrieNode * newTrieNode(char letter);
 void freeTrie(TrieNode * trie);
-void printTrieNode(TrieNode * node);
-
-void addWord(char * word, int id, TrieNode ** rootPointer);
 void printTrie(TrieNode * root);
-int checkIfWordExists(char * word, TrieNode * root);
+
+int findNextWord(int * start, int * end, char * line);
+void addWord(char * word, int id, TrieNode ** rootPointer);
+int addWordsIntoTrie(char * line, int id, TrieNode ** trie);
+int checkIfWordExists(char * word, TrieNode * node);
+void validateTrieInsertion(char * line, TrieNode ** trie);
+int getDocumentFrequency(char * word, TrieNode * node);
+void df(char * line, TrieNode ** trie);
