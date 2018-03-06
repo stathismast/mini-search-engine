@@ -23,22 +23,22 @@ int main(int argc, char *argv[]){
 	}
 
 	//Print every line
-	for(int i=0; i<lineCounter; i++)
-		printf("(%d)%d. %s\n",(int)strlen(lines[i]), i, lines[i]);
+	// for(int i=0; i<lineCounter; i++)
+	// 	printf("(%d)%d. %s\n",(int)strlen(lines[i]), i, lines[i]);
 
 	//Insert every word to out trie and store the number of words for each line
 	int * wordCounter = malloc(lineCounter * sizeof(int));
 	for(int i=0; i<lineCounter; i++)
 		wordCounter[i] = addWordsIntoTrie(lines[i], i, &trie);
 
-	for(int i=0; i<lineCounter; i++)
-		printf("Line %d has %d words.\n", i, wordCounter[i]);
+	// for(int i=0; i<lineCounter; i++)
+	// 	printf("Line %d has %d words.\n", i, wordCounter[i]);
 
 	//Check to make sure that every word has been properly added in the trie
-	for(int i=0; i<lineCounter; i++)
-		validateTrieInsertion(lines[i], &trie);
+	// for(int i=0; i<lineCounter; i++)
+	// 	validateTrieInsertion(lines[i], &trie);
 
-	commandInputLoop(lineCounter, trie);
+	commandInputLoop(lineCounter, lines, wordCounter, trie);
 
 	//Deallocate space for stored lines and trie
 	for(int i=0; i<lineCounter; i++)

@@ -19,5 +19,5 @@ void printTrie(TrieNode * root);
 int findNextWord(int * start, int * end, char * line);
 void addWord(char * word, int id, TrieNode ** rootPointer);
 int addWordsIntoTrie(char * line, int id, TrieNode ** trie);
-int checkIfWordExists(char * word, TrieNode * node);
+PostingListHead * getPostingList(char * word, TrieNode * node);
 void validateTrieInsertion(char * line, TrieNode ** trie);

@@ -58,7 +58,10 @@ int firstRead(FILE * input, LineInfo ** head){
 				freeLineInfo(*head);
 				return -1;
 			}
-			if(node->letterCount <= 1){ //If there is nothing after the id of a line
+			//If there is nothing after the id of a line, it has no content.
+			//Though, if there is even one character (even a whitespace
+			//character) it will not produce this error. 
+			if(node->letterCount <= 1){
 				printf("ERROR: Line %d has no content.\n", lineCounter);
 				freeLineInfo(*head);
 				return -1;
@@ -68,7 +71,6 @@ int firstRead(FILE * input, LineInfo ** head){
 			isNewLine = 1;
 		}
 	}
-	printf("First Pass: Read %d lines.\n", lineCounter);
 	freeCharList(cl);
 	return lineCounter;
 }
@@ -84,8 +86,7 @@ char ** secondRead(FILE * input, int lineCounter, LineInfo * head){
 	//Allocate space for each line
 	lines = malloc(lineCounter*sizeof(char*));
 	for(int i=0; i<lineCounter; i++){
-		lines[i] = malloc(node->letterCount * sizeof(char));
-		printf("Mallocing for %d chars\n", node->letterCount);
+		lines[i] = malloc(node->letterCount * sizeof(char));\
 		node = node->next;
 	}
 
@@ -132,7 +133,7 @@ char ** readInputFile(char * fileName, int * lineCounter){
 		return NULL;
 	}
 	*lineCounter = firstRead(stream, &head);
-	if(*lineCounter < 1) { fclose(stream); freeLineInfo(head); printf("ERROR: Input file has no content.\n"); return NULL; }
+	if(*lineCounter < 1) { fclose(stream); return NULL; }
 	fclose(stream);
 
 	//Second read through file to allocate space for and store every line

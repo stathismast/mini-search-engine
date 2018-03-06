@@ -101,26 +101,26 @@ int addWordsIntoTrie(char * line, int id, TrieNode ** trie){
 
 
 
-//Searches the trie to determine if the given word exists in the trie
-int checkIfWordExists(char * word, TrieNode * node){
-	if(strlen(word) == 0) return 0; 		//If the given word has a length of 0, it clearly isn't in the trie
-	if(node == NULL) return 0;				//If the given node is NULL, it means that the function was called
+//Searches the trie to determine if the given word exists and returns its posting list
+PostingListHead * getPostingList(char * word, TrieNode * node){
+	if(strlen(word) == 0) return NULL; 		//If the given word has a length of 0, it clearly isn't in the trie
+	if(node == NULL) return NULL;				//If the given node is NULL, it means that the function was called
 											//recursively for a NULL node, meaning that the given word isn't in the trie
 
 	//If the next letter of the word matches that of the node
 	if(word[0] == node->letter){
 		if(strlen(word) == 1)				//Check if this was the last letter of the given word
 			if(node->postingList != NULL)	//Check if it has a posting list, indicating that
-				return 1;					//it is the last letter of an included word
-			else return 0;					//If it doesn't have a posting list, its not an included word
+				return node->postingList;	//it is the last letter of an included word
+			else return NULL;					//If it doesn't have a posting list, its not an included word
 
 		//If this isn't yet the last letter of the given word, check for the next letter
-		return checkIfWordExists(word+1, node->nextLetter);
+		return getPostingList(word+1, node->nextLetter);
 	}
 	else{
 		//If the word's letter doesn't match the letter of the node
 		//maybe it will match that of this node's 'otherLetter'
-		return checkIfWordExists(word, node->otherLetter);
+		return getPostingList(word, node->otherLetter);
 	}
 }
 
@@ -138,7 +138,7 @@ void validateTrieInsertion(char * line, TrieNode ** trie){
 		memcpy(string, &line[start], end - start);
 		string[end - start] = 0;	//Add null character at the end
 		// printf("Searching for %s...\n", string);
-		if(!checkIfWordExists(string, *trie)) count++;
+		if(getPostingList(string, *trie) != NULL) count++;
 		free(string);
 
 		start = end;
