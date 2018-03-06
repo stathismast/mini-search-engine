@@ -58,11 +58,11 @@ void addToPostingList(int id, PostingListHead ** head){
 }
 
 //Return a pointer to a posting list node for the given id, or NULL if it is not found
-PostingListNode ** getPosting(int id, PostingListNode ** head){
-	if(*head == NULL) return head;
+PostingListNode ** getPosting(int id, PostingListNode ** node){
+	if(*node == NULL) return node;
 
-	if((*head)->id == id){
-		return head;
+	if((*node)->id == id){
+		return node;
 	}
-	else return getPosting(id, &((*head)->next));
+	else return getPosting(id, &((*node)->next));
 }

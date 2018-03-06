@@ -5,3 +5,4 @@ char * getCommand();
 void commandInputLoop(int lineCounter, TrieNode * trie);
 int getDocumentFrequency(char * word, TrieNode * node);
 void printDocumentFrequency(CharList * word, TrieNode * node);
+int getTermFrequency(int id, char * word, TrieNode * node);
