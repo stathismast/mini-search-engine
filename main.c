@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
 	// for(int i=0; i<lineCounter; i++)
 	// 	validateTrieInsertion(lines[i], &trie);
 
-	commandInputLoop(lineCounter, lines, wordCounter, trie);
+	commandInputLoop(k, lineCounter, lines, wordCounter, trie);
 
 	//Deallocate space for stored lines and trie
 	for(int i=0; i<lineCounter; i++)

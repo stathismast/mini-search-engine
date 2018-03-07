@@ -1,4 +1,5 @@
 #include "commands.h"
+#include "searchInfo.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,7 +34,7 @@ int getAvgWordCount(int lineCounter, int * wordCounter){
 }
 
 //Main loop for command input and execution
-void commandInputLoop(int lineCounter, char ** lines, int * wordCounter, TrieNode * trie){
+void commandInputLoop(int k, int lineCounter, char ** lines, int * wordCounter, TrieNode * trie){
 	int avgWordCount = getAvgWordCount(lineCounter,wordCounter);
 	while(1){
 		printf("> ");
@@ -52,7 +53,7 @@ void commandInputLoop(int lineCounter, char ** lines, int * wordCounter, TrieNod
 		else if(strcmp(command, "/tf") == 0)
 			tf(trie);
 		else if(strcmp(command, "/search") == 0)
-			search(wordCounter,avgWordCount,lineCounter,trie);
+			search(k,wordCounter,avgWordCount,lineCounter,trie);
 		else if(strcmp(command, "/help") == 0 && strtok(NULL, " \t\n") == NULL){
 			printf("To search with up to 10 keywords:\n\t/search q1 q2 ... q10\n\n");
 			printf("To print the document frequency of every word:\n\t/df\n\n");
@@ -160,7 +161,7 @@ int getTermFrequency(int id, char * word, TrieNode * node){
 }
 
 //Prints out the results from a valid use of the /search command
-void search(int * wordCounter, int avgWordCount, int lineCounter, TrieNode * trie){			//If /search is given
+void search(int k, int * wordCounter, int avgWordCount, int lineCounter, TrieNode * trie){			//If /search is given
 	char * searchTerm;
 	while((searchTerm = strtok(NULL, " \t\n")) != NULL)
 		if(searchTerm == NULL) printf("Invalid use of /search command. Usage: /search q1 q2 ... q10\n");
@@ -170,11 +171,20 @@ void search(int * wordCounter, int avgWordCount, int lineCounter, TrieNode * tri
 			if(pl == NULL) printf("'%s' does not exist in the given dataset.\n", searchTerm);
 			else{
 				int docFreq = pl->documentFreq;
+				SearchInfo ** searchInfo = newSearchInfoArray(docFreq);
 				PostingListNode * node = pl->next;
-				while(node != NULL){
-					printf("( %d) [%f]\n", node->id, getScore(node->count, wordCounter[node->id], avgWordCount, lineCounter, docFreq));
+				for(int i=0; i<docFreq; i++){			//Load ids and scores into an array
+					double score = getScore(node->count, wordCounter[node->id], avgWordCount, lineCounter, docFreq);
+					searchInfo[i]->id = node->id;
+					searchInfo[i]->score = score;
 					node = node->next;
 				}
+				quicksort(searchInfo, 0, docFreq-1);	//Sort array containing ids and scores
+				if(k > docFreq) k = docFreq;
+				for(int i=0; i<k; i++){					//Print out the results
+					printf("%d.\t(%d)\t[%f]\n", i+1, searchInfo[i]->id, searchInfo[i]->score);
+				}
+				freeSearchInfoArray(searchInfo, docFreq);
 			}
 		}
 }
