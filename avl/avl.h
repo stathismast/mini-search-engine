@@ -3,11 +3,11 @@
 
 typedef struct AVLTree
 {
-    int id;
-    double score;
-    int height;
-    struct AVLTree* left;
-    struct AVLTree* right;
+	int id;
+	double score;
+	int height;
+	struct AVLTree* left;
+	struct AVLTree* right;
 } AVLTree;
 
 #endif // AVLTREE_H_INCLUDED
