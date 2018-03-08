@@ -1,5 +1,6 @@
 #include "commands.h"
 #include "searchInfo.h"
+#include "avl.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -161,32 +162,38 @@ int getTermFrequency(int id, char * word, TrieNode * node){
 }
 
 //Prints out the results from a valid use of the /search command
-void search(int k, int * wordCounter, int avgWordCount, int lineCounter, TrieNode * trie){			//If /search is given
+void search(int k, int * wordCounter, int avgWordCount, int lineCounter, TrieNode * trie){
+	AVLTree * tree = NULL;
+	SearchInfo ** searchInfo;
+	int docCounter = 0;
+	int start = 0;
+	loadTermsIntoTree(&tree, &docCounter, wordCounter, avgWordCount, lineCounter, trie);
+	searchInfo = newSearchInfoArray(docCounter);
+	avlToSearchInfoArray(tree, searchInfo, &start);
+	freeAVLTree(tree);
+	quicksort(searchInfo, 0, docCounter-1);	//Sort array containing ids and scores
+	if(k > docCounter) k = docCounter;
+	for(int i=0; i<k; i++){					//Print out the results
+		printf("%d.\t(%d)\t[%f]\n", i+1, searchInfo[i]->id, searchInfo[i]->score);
+	}
+	freeSearchInfoArray(searchInfo, docCounter);
+}
+
+void loadTermsIntoTree(AVLTree ** tree, int * docCounter, int * wordCounter, int avgWordCount, int lineCounter, TrieNode * trie){
 	char * searchTerm;
-	while((searchTerm = strtok(NULL, " \t\n")) != NULL)
-		if(searchTerm == NULL) printf("Invalid use of /search command. Usage: /search q1 q2 ... q10\n");
-		else{
-			printf("Searching for '%s'\n", searchTerm);
-			PostingListHead * pl = getPostingList(searchTerm, trie);
-			if(pl == NULL) printf("'%s' does not exist in the given dataset.\n", searchTerm);
-			else{
-				int docFreq = pl->documentFreq;
-				SearchInfo ** searchInfo = newSearchInfoArray(docFreq);
-				PostingListNode * node = pl->next;
-				for(int i=0; i<docFreq; i++){			//Load ids and scores into an array
-					double score = getScore(node->count, wordCounter[node->id], avgWordCount, lineCounter, docFreq);
-					searchInfo[i]->id = node->id;
-					searchInfo[i]->score = score;
-					node = node->next;
-				}
-				quicksort(searchInfo, 0, docFreq-1);	//Sort array containing ids and scores
-				if(k > docFreq) k = docFreq;
-				for(int i=0; i<k; i++){					//Print out the results
-					printf("%d.\t(%d)\t[%f]\n", i+1, searchInfo[i]->id, searchInfo[i]->score);
-				}
-				freeSearchInfoArray(searchInfo, docFreq);
+	while((searchTerm = strtok(NULL, " \t\n")) != NULL){
+		PostingListHead * pl = getPostingList(searchTerm, trie);
+		if(pl != NULL){
+			int docFreq = pl->documentFreq;
+			PostingListNode * node = pl->next;		//Get the first node after the posting list head
+			for(int i=0; i<docFreq; i++){			//Load ids and scores into the tree
+				double score = getScore(node->count, wordCounter[node->id], avgWordCount, lineCounter, docFreq);
+				int nodeAdded = insertToAVL(node->id, score, tree);
+				*docCounter += nodeAdded;
+				node = node->next;
 			}
 		}
+	}
 }
 
 double getScore(int termFreq, int wordCount, int avgWordCount, int lineCounter, int docFreq){

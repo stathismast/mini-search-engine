@@ -1,5 +1,6 @@
 #include "trie.h"
 #include "charList.h"
+#include "avl.h"
 
 char * getCommand();
 int isNumber(char * str);
@@ -11,5 +12,6 @@ void printDocumentFrequency(CharList * word, TrieNode * node);
 void tf(TrieNode * trie);
 int getTermFrequency(int id, char * word, TrieNode * node);
 void search(int k, int * wordCounter, int avgWordCount, int lineCounter, TrieNode * trie);
+void loadTermsIntoTree(AVLTree ** tree, int * docCounter, int * wordCounter, int avgWordCount, int lineCounter, TrieNode * trie);
 double getScore(int tf, int wordCount, int avgWordCount, int lineCounter, int docFreq);
 double getIDF(int lineCounter, int docFreq);
