@@ -24,7 +24,7 @@ int isNumber(char * str){
 }
 
 //Calculate avarage number of words per line
-int getAvgWordCount(int lineCounter, int * wordCounter){
+double getAvgWordCount(int lineCounter, int * wordCounter){
 	double sum = 0;
 	for(int i=0; i<lineCounter; i++)
 		sum += wordCounter[i];
@@ -33,7 +33,7 @@ int getAvgWordCount(int lineCounter, int * wordCounter){
 
 //Main loop for command input and execution
 void commandInputLoop(int k, int lineCounter, char ** lines, int * wordCounter, TrieNode * trie){
-	int avgWordCount = getAvgWordCount(lineCounter,wordCounter);	//Calculate the avarage number of words in every line
+	double avgWordCount = getAvgWordCount(lineCounter,wordCounter);	//Calculate the avarage number of words in every line
 	while(1){
 		printf("> ");
 		char * command = getCommand();
@@ -163,7 +163,7 @@ int getTermFrequency(int id, char * word, TrieNode * node){
 }
 
 //Prints out the results of a /search command
-void search(int k, int * wordCounter, int avgWordCount, int lineCounter, TrieNode * trie){
+void search(int k, int * wordCounter, double avgWordCount, int lineCounter, TrieNode * trie){
 	AVLTree * tree = NULL;		//Tree used to compile the scores for each id that contains any of the search terms
 	SearchInfo ** searchInfo;	//Array of pointers to SearchInfo nodes used to sort the nodes by their scores after they have been compiled together
 	int docCounter = 0;			//Number of different ids that cointain any of the given search terms
@@ -196,7 +196,7 @@ void search(int k, int * wordCounter, int avgWordCount, int lineCounter, TrieNod
 
 //Using the given trie and the /search arguments, calculatre the score for each
 //term in each id. If an id contains more than one of the search terms, the scores will be added together
-void loadTermsIntoTree(AVLTree ** tree, int * docCounter, int * wordCounter, int avgWordCount, int lineCounter, TrieNode * trie){
+void loadTermsIntoTree(AVLTree ** tree, int * docCounter, int * wordCounter, double avgWordCount, int lineCounter, TrieNode * trie){
 	char * searchTerm;	//String for each search term
 	while((searchTerm = strtok(NULL, " \t\n")) != NULL){			//For every given search term
 		PostingListHead * pl = getPostingList(searchTerm, trie);	//Search for its posting list
@@ -216,7 +216,7 @@ void loadTermsIntoTree(AVLTree ** tree, int * docCounter, int * wordCounter, int
 //Given a term frequency of a word in a line, the word count of a line, the
 //avarage word count of all the lines, the total number of lines and the document
 //frequency of a word calculate its score
-double getScore(int termFreq, int wordCount, int avgWordCount, int lineCounter, int docFreq){
+double getScore(int termFreq, int wordCount, double avgWordCount, int lineCounter, int docFreq){
 	double k = 1.2;
 	double b = 0.75;
 	double idf = getIDF(lineCounter,docFreq);
