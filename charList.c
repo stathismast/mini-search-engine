@@ -1,7 +1,7 @@
 #include "charList.h"
 #include <stdlib.h>
 
-//Create a new CharList
+//Create and initialize a new CharList
 CharList * newCharList(char c){
 	CharList * node = malloc(sizeof(CharList));
 	node->c = c;
@@ -16,7 +16,7 @@ void freeCharList(CharList * cl){
 	free(cl);
 }
 
-//Adds the given letter at the end of a charList
+//Add the given letter at the end of a charList
 void appendToCharList(char c, CharList ** node){
 	if(*node == NULL) *node = newCharList(c);
 	else{
@@ -24,7 +24,7 @@ void appendToCharList(char c, CharList ** node){
 	}
 }
 
-//Returns the length of a CharList
+//Return the length of a CharList
 int charListLength(CharList * cl){
 	int length = 0;
 	CharList * node = cl;
@@ -35,7 +35,7 @@ int charListLength(CharList * cl){
 	return length;
 }
 
-//Converts a charList to a string
+//Convert a charList to a string
 char * charListToString(CharList * cl){
 	int length = charListLength(cl);
 	char * string = malloc(length * sizeof(char) + 1);
@@ -45,11 +45,11 @@ char * charListToString(CharList * cl){
 		string[i] = node->c;
 		node = node->next;
 	}
-	//Add null character at the end of the string
-	string[length] = 0;
+	string[length] = 0;	//Add null character at the end of the string
 	return string;
 }
 
+//Remove the last letter of a given CharList
 void deleteLastLetter(CharList ** cl){
 	if(*cl == NULL) return;
 	if((*cl)->next != NULL)
