@@ -15,6 +15,17 @@ requirments and basic functionallity of AVL Trees, with the biggest contibutor
 being the book mentioned above.
 */
 
+//Create and initialize an AVLTree node
+AVLTree * newAVLNode(int id, double score){
+	AVLTree * node = malloc(sizeof(AVLTree));
+	node->id = id;
+	node->score = score;
+	node->height = 0;
+	node->left = NULL;
+	node->right = NULL;
+	return node;
+}
+
 //Deallocate space of an AVL tree
 void freeAVLTree(AVLTree * tree){
 	if(tree == NULL) return;
@@ -103,15 +114,9 @@ int insertToAVL(int id, double score, AVLTree ** tree){
 						//know how large the SearchInfo array will be after we
 						//have compiled all the id-scores in the AVL tree
 
-	//If there is no node in the given pointer, create it and initialize it
-	if(*tree == NULL){
-		(*tree) = malloc(sizeof(AVLTree));
-		(*tree)->id = id;
-		(*tree)->score = score;
-		(*tree)->height = 0;
-		(*tree)->left = NULL;
-		(*tree)->right = NULL;
-		return 1;				//Return '1' to denote that a new node was added
+	if(*tree == NULL){					//If there is no node in the given pointer
+		(*tree) = newAVLNode(id,score);	//Create and initialize a tree node with the given id and score values
+		return 1;						//Return '1' to denote that a new node was added
 	}
 
 	if(id < (*tree)->id){												//If the given id is less that the id of the current node

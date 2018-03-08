@@ -16,6 +16,8 @@ typedef struct PostingListNode{
 
 #endif //POSTINGLIST_H
 
+PostingListHead * newPostingListHead();
+PostingListNode * newPostingListNode(int id);
 void freePostingList(PostingListHead * head);
 void freePostingListNode(PostingListNode * node);
 void printPostingList(PostingListHead * head);

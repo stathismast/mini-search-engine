@@ -14,6 +14,7 @@ typedef struct AVLTree
 
 #endif // AVLTREE_H_INCLUDED
 
+AVLTree * newAVLNode(int id, double score);
 void freeAVLTree(AVLTree * tree);
 void leftRotate(AVLTree ** node);
 void rightRotate(AVLTree ** node);

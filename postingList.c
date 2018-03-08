@@ -2,6 +2,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//Create and initialize a new posting list head
+PostingListHead * newPostingListHead(){
+	PostingListHead * head = malloc(sizeof(PostingListHead));
+	head->documentFreq = 1;
+	return head;
+}
+
+//Create and initialize a new posting list node
+PostingListNode * newPostingListNode(int id){
+	PostingListNode * node = malloc(sizeof(PostingListNode));
+	node->id = id;
+	node->count = 1;
+	node->next = NULL;
+	return node;
+}
+
 //Deallocate space if a posting list and all of its nodes
 void freePostingList(PostingListHead * head){
 	if(head == NULL) return;
@@ -32,23 +48,15 @@ void printPostingListNode(PostingListNode * node){
 
 //Increase the counter for a posting list and a given id
 void addToPostingList(int id, PostingListHead ** head){
-	//If there is no posting list for this letter
-	if(*head == NULL){
-		(*head) = malloc(sizeof(PostingListHead));			//Create a new posting list head
-		(*head)->documentFreq = 1;
-		(*head)->next = malloc(sizeof(PostingListNode));	//Create a new posting list node
-		((*head)->next)->id = id;
-		((*head)->next)->count = 1;
-		((*head)->next)->next = NULL;
+	if(*head == NULL){							//If there is no posting list for this letter
+		(*head) = newPostingListHead();			//Create a new posting list head
+		(*head)->next = newPostingListNode(id);	//Add a posting list node to the head
 	}
 	else{ //If there is a posting list already
 		PostingListNode ** node = &((*head)->next);
 		PostingListNode ** postingList = getPosting(id, node);	//Find the posting for the given id
 		if(*postingList == NULL){								//If there is no posting list for the given id
-			(*postingList) = malloc(sizeof(PostingListNode));	//Create a new posting list node
-			(*postingList)->id = id;
-			(*postingList)->count = 1;
-			(*postingList)->next = NULL;
+			(*postingList) = newPostingListNode(id);			//Create a new posting list node
 			(*head)->documentFreq++;							//Increase the total number of documents this word is in
 		}
 		else{ 							//If there is already a posting list node for the given id
