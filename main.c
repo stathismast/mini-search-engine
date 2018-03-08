@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "inputManager.h"
-#include "commands.h"
+#include "inputManager/inputManager.h"
+#include "commands/commands.h"
 
 #include <string.h>
 
