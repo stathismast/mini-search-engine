@@ -23,7 +23,7 @@ void freeTrie(TrieNode * trie){
 
 //Given a string, and a starting point, this function sets 'start' and 'end'
 //at the start and the end of the first word after the given starting point
-//This works similarly to 'strtok'.
+//This works similarly to 'strtok' but doesn't change the input string
 int findNextWord(int * start, int * end, char * line){
 	//Consume whitespace characters
 	while(line[*start] == ' ' || line[*start] == '\t')
