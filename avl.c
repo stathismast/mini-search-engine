@@ -1,12 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "avl.h"
+#include <stdlib.h>
 
 /*
 This implementation of an AVL Tree is based on a data structured I developed
 during my second semester. I used the following book
 https://www.cup.gr/book/domes-dedomenon/
-as a general guide, as well as the web pages below:
+as the main guide, as well as the web pages below:
 https://www.cs.auckland.ac.nz/software/AlgAnim/AVL.html
 https://en.wikipedia.org/wiki/AVL_tree
 
@@ -146,29 +145,6 @@ int insertToAVL(int id, double score, AVLTree ** tree){
 	if(l>r) (*tree)->height = l+1;
 	else (*tree)->height = r+1;
 	return nodeAdded;			//Return whether or not we added a new node into the Tree
-}
-
-//To be deleted
-void printTree(AVLTree* tree){
-	if(tree == NULL) return;
-
-	printf("%d",tree->id);
-	if(tree->left != NULL)
-		printf("(L:%d)",tree->left->id);
-	if(tree->right != NULL)
-		printf("(R:%d)",tree->right->id);
-	printf("\n");
-
-	printTree(tree->left);
-	printTree(tree->right);
-}
-
-//To be deleted
-void printTreeInOrder(AVLTree * tree){
-	if(tree == NULL) return;
-	printTreeInOrder(tree->left);
-	printf("%d %f\n", tree->id, tree->score);
-	printTreeInOrder(tree->right);
 }
 
 //Convert the given tree into an array of pointers to SearchInfo nodes

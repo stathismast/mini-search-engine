@@ -10,10 +10,10 @@ LineInfo * newLineInfo(){
 }
 
 //Deallocate space used for a given LineInfo List
-void freeLineInfo(LineInfo * li){
-	if(li == NULL) return;
-	freeLineInfo(li->next);
-	free(li);
+void freeLineInfo(LineInfo * lineInfo){
+	if(lineInfo == NULL) return;
+	freeLineInfo(lineInfo->next);
+	free(lineInfo);
 }
 
 //Increase the length of a LineInfo list and return a pointer to the newest node

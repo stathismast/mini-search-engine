@@ -1,5 +1,4 @@
 #include "postingList.h"
-#include <stdio.h>
 #include <stdlib.h>
 
 //Create and initialize a new posting list head
@@ -30,20 +29,6 @@ void freePostingListNode(PostingListNode * node){
 	if(node == NULL) return;
 	freePostingListNode(node->next);
 	free(node);
-}
-
-//Print a posting list
-void printPostingList(PostingListHead * head){
-	if(head == NULL) return;
-	printf("%d: ", head->documentFreq);
-	printPostingListNode(head->next);
-}
-
-//Print a posting list node and all of its subsequent nodes
-void printPostingListNode(PostingListNode * node){
-	if(node == NULL) return;
-	printf("[%d, %d] ", node->id, node->count);
-	printPostingListNode(node->next);
 }
 
 //Increase the counter for a posting list and a given id

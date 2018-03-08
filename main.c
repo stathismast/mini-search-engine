@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "trie.h"
 #include "inputManager.h"
 #include "commands.h"
 

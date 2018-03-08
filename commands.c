@@ -1,6 +1,4 @@
 #include "commands.h"
-#include "searchInfo.h"
-#include "avl.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

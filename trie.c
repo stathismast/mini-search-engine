@@ -1,5 +1,4 @@
 #include "trie.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -20,19 +19,6 @@ void freeTrie(TrieNode * trie){
 	freeTrie(trie->otherLetter);
 	freePostingList(trie->postingList);
 	free(trie);
-}
-
-//Silly print function for testing purposes. Should be deleted in final version
-void printTrie(TrieNode * node){
-	if(node == NULL) return;
-
-	printf("\n%c", node->letter);
-	if(node->otherLetter != NULL) printf(" --> %c\n", node->otherLetter->letter); else printf("\n");
-	if(node->nextLetter != NULL) printf("|\n%c\n", node->nextLetter->letter);
-	if(node->postingList != NULL) { printf("----Posting List: "); printPostingList(node->postingList); printf("\n"); }
-
-	printTrie(node->nextLetter);
-	printTrie(node->otherLetter);
 }
 
 //Given a string, and a starting point, this function sets 'start' and 'end'
@@ -56,27 +42,27 @@ int findNextWord(int * start, int * end, char * line){
 //Each time this function is called, it stores the first letter of the given word
 //and then calls itself for the rest of the letters. If a node for a letter does
 //not exist, it creates it.
-void addWord(char * word, int id, TrieNode ** rootPointer){
+void addWord(char * word, int id, TrieNode ** node){
 	if(strlen(word) == 0) return;	//If we have added every letter, just return
 
 	//If this node is NULL we should first create a new node
-	if(*rootPointer == NULL){
-		*rootPointer = newTrieNode(word[0]);						//Create new node and store the current letter in it
-		if(strlen(word) == 1){										//Check if this was the last letter of the word
-			addToPostingList(id, &((*rootPointer)->postingList));	//If so add the nesessary info to its posting list
-			return;													//and return
+	if(*node == NULL){
+		*node = newTrieNode(word[0]);						//Create new node and store the current letter in it
+		if(strlen(word) == 1){								//Check if this was the last letter of the word
+			addToPostingList(id, &((*node)->postingList));	//If so add the nesessary info to its posting list
+			return;											//and return
 		}
-		addWord(word+1, id, &((*rootPointer)->nextLetter));			//Call this function for the rest of the letters
+		addWord(word+1, id, &((*node)->nextLetter));		//Call this function for the rest of the letters
 	}
-	else if(word[0] == (*rootPointer)->letter){						//If this letter of the given word already has a node
-		if(strlen(word) == 1){										//Check if this was the last letter of the word
-			addToPostingList(id, &((*rootPointer)->postingList));	//If so add the nesessary info to its posting list
+	else if(word[0] == (*node)->letter){					//If this letter of the given word already has a node
+		if(strlen(word) == 1){								//Check if this was the last letter of the word
+			addToPostingList(id, &((*node)->postingList));	//If so add the nesessary info to its posting list
 			return;
 		}
-		addWord(word+1, id, &((*rootPointer)->nextLetter));			//Call this function for the rest of the letters
+		addWord(word+1, id, &((*node)->nextLetter));		//Call this function for the rest of the letters
 	}
-	else{ 															//If the letters don't match, maybe the given word will match to a different trie branch
-		addWord(word, id, &((*rootPointer)->otherLetter)); 			//Call this function for the same letter on a differnt trie branch
+	else{ 													//If the letters don't match, maybe the given word will match to a different trie branch
+		addWord(word, id, &((*node)->otherLetter)); 		//Call this function for the same letter on a differnt trie branch
 	}
 }
 
@@ -124,27 +110,4 @@ PostingListHead * getPostingList(char * word, TrieNode * node){
 		//maybe it will match that of this node's 'otherLetter'
 		return getPostingList(word, node->otherLetter);
 	}
-}
-
-//Checks to make sure that every word has been properly added into the trie
-//Works in a similar fashion to the 'addWordsIntoTrie' function
-void validateTrieInsertion(char * line, TrieNode ** trie){
-	int start = 0;
-	int end;
-
-	int count = 0;
-
-	char * string;
-
-	while(line[start] != 0 && findNextWord(&start, &end, line)){
-		string = malloc(end - start + 1);
-		memcpy(string, &line[start], end - start);
-		string[end - start] = 0;	//Add null character at the end
-		if(getPostingList(string, *trie) != NULL) count++;
-		free(string);
-
-		start = end;
-	}
-
-	printf("Number of words that aren't included: %d\n", count);
 }

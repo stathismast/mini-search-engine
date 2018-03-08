@@ -10,24 +10,24 @@ CharList * newCharList(char c){
 }
 
 //Deallocate all the nodes of a CharList
-void freeCharList(CharList * cl){
-	if(cl == NULL) return;
-	freeCharList(cl->next);
-	free(cl);
+void freeCharList(CharList * charList){
+	if(charList == NULL) return;
+	freeCharList(charList->next);
+	free(charList);
 }
 
 //Add the given letter at the end of a charList
-void appendToCharList(char c, CharList ** node){
-	if(*node == NULL) *node = newCharList(c);
+void appendToCharList(char c, CharList ** charList){
+	if(*charList == NULL) *charList = newCharList(c);
 	else{
-		appendToCharList(c, &((*node)->next));
+		appendToCharList(c, &((*charList)->next));
 	}
 }
 
 //Return the length of a CharList
-int charListLength(CharList * cl){
+int charListLength(CharList * charList){
 	int length = 0;
-	CharList * node = cl;
+	CharList * node = charList;
 	while(node != NULL){
 		length++;
 		node = node->next;
@@ -36,10 +36,10 @@ int charListLength(CharList * cl){
 }
 
 //Convert a charList to a string
-char * charListToString(CharList * cl){
-	int length = charListLength(cl);
+char * charListToString(CharList * charList){
+	int length = charListLength(charList);
 	char * string = malloc(length * sizeof(char) + 1);
-	CharList * node = cl;
+	CharList * node = charList;
 
 	for(int i=0; i<length; i++){
 		string[i] = node->c;
@@ -50,12 +50,12 @@ char * charListToString(CharList * cl){
 }
 
 //Remove the last letter of a given CharList
-void deleteLastLetter(CharList ** cl){
-	if(*cl == NULL) return;
-	if((*cl)->next != NULL)
-		deleteLastLetter(&(*cl)->next);
+void deleteLastLetter(CharList ** charList){
+	if(*charList == NULL) return;
+	if((*charList)->next != NULL)
+		deleteLastLetter(&(*charList)->next);
 	else{
-		free(*cl);
-		*cl = NULL;
+		free(*charList);
+		*charList = NULL;
 	}
 }
