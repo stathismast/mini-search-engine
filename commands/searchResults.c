@@ -5,14 +5,17 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+//Return the width of the window/terminal
 int getWindowWidth(){
 	struct winsize w;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 	return w.ws_col;
 }
 
-int getOffset(int i){
-	int offset = 0;
+//Return the number of digits of the given integer
+int getNumberOfDigits(int i){
+	if(i==0) return 1;
+	int offset = 1;
 	int p = 10;
 	while(i%p != i){
 		offset++;
@@ -21,47 +24,38 @@ int getOffset(int i){
 	return offset;
 }
 
-//Prints integers inside of '()' with a total width of 8 characters (including the parenthesis)
-//Supports integers up to 999999.
-void printID(int id, int width){
-	if(id < 10){
-		printf("(");
-		for(int i=0; i<width-1; i++) printf(" ");
-		printf("%d)", id);
-	}
-	else{
-		int offset = width - (getOffset(id) + 1);
-		printf("(");
-		for(int i=0; i<offset; i++)
-			printf(" ");
-		printf("%d)", id);
-	}
-}
-
-//Prints doubles inside of '[]' with a total width of 9 characters (including the brackets)
-//Supports doubles up to 9999999. The precision of a number changes depending on how big that number is
-void printScore(double score, int basePrecision){
-	if(score < 0) basePrecision--;
-	if(score < 10) printf("[%.*f]", basePrecision, score);
-	else{
-		int precision = basePrecision - getOffset((int)score);
-		printf("[%.*f]", precision, score);
-	}
-}
-
+//Print the ascending number thats at the start of every search result
+//Depending on the given offset, this function will print the number further to
+//the right to keep a proper format for every search result
 void printCounter(int counter, int offset){
-	if(offset > 0){
-		int p = 10;
-		while(counter%p != counter){
-			offset--;
-			p *= 10;
-		}
-	}
+	offset = offset - getNumberOfDigits(counter);
 	for(int i=0; i<offset; i++)
 		printf(" ");
 	printf("%d.", counter);
 }
 
+//Print an integer inside of '()' with a given width
+void printID(int id, int width){
+	int offset = width - getNumberOfDigits(id);
+	printf("(");
+	for(int i=0; i<offset; i++)
+		printf(" ");
+	printf("%d)", id);
+}
+
+//Print a double inside of '[]' with a given precision
+//The precision of a number changes depending on how big that number is
+//If that number is negative, we have to account for the '-' character at the front
+void printScore(double score, int basePrecision){
+	if(score < 0) basePrecision--;
+	if(score < 10) printf("[%.*f]", basePrecision, score);
+	else{
+		int precision = basePrecision - getNumberOfDigits((int)score) + 1;
+		printf("[%.*f]", precision, score);
+	}
+}
+
+//Check if the 'term' string is included the array of strings 'searchTerms'
 int isSearchTerm(char * term, char ** searchTerms){
 	for(int i=0; i<10; i++)
 		if(searchTerms[i] != NULL && !strcmp(term,searchTerms[i]))
@@ -69,70 +63,73 @@ int isSearchTerm(char * term, char ** searchTerms){
 	return 0;
 }
 
-void printSearchResults(int k, int lineCounter, SearchInfo ** searchInfo, char ** lines, char ** searchTerms){
-	int windowWidth	= getWindowWidth();
-	int offset = getOffset(k);
-	int idWidth = getOffset(lineCounter)+1;
-	int precision = 6;
-	int indentSize = offset + idWidth + precision + 9;
+//Return a pointer to a copy of the given string/document
+char * copyDocument(char * document){
+	int length = strlen(document);
+	char * copy = malloc((length+1)*sizeof(char));
+	memcpy(copy, document, length);
+	copy[length] = 0;
+	return copy;
+}
 
-	for(int i=0; i<k; i++){
-		printCounter(i+1,offset);
-		printID(searchInfo[i]->id,idWidth);
-		printScore(searchInfo[i]->score,precision);
+void printSearchResults(int k, int lineCounter, SearchInfo ** searchInfo, char ** lines, char ** searchTerms){
+	int windowWidth	= getWindowWidth();						//Terminal/window width
+	int offset = getNumberOfDigits(k);						//Offset used to allign the ascending number at the start of every search result
+	int idWidth = getNumberOfDigits(lineCounter);			//Number of digits in the lineCounter, which is also the maximum number of digits that any document id will have
+	int scorePresision = 6;									//Precision for the output of the score of every search result
+	int indentSize = offset + idWidth + scorePresision + 8;	//Size of indent used to keep the text alligned
+
+	char * doc;			//String used to store documents before printing
+	char * word;		//String used to store a word of a document to check if it is a search term
+	int cursorPosition;	//Curson position, used to place the idicators under every search term that is in the document
+	char * indicators;	//String used to store the positions of each indicator in order to appear under each search term of a document
+
+	indicators = malloc(windowWidth * sizeof(char)+1);	//Allocate space for 'indicators' string equal to the width of the window/terminal
+	for(int i=0; i<windowWidth; i++)					//Initialize indicators to ' '
+		indicators[i] = ' ';
+	indicators[windowWidth] = 0;						//Add a null character at the end
+
+	for(int i=0; i<k; i++){											//For every search result
+		printCounter(i+1,offset);									//Print the ascending number
+		printID(searchInfo[i]->id,idWidth);							//Print the id
+		printScore(searchInfo[i]->score,scorePresision);			//Print the score
 		printf(" ");
 
-		char * doc = malloc(strlen(lines[searchInfo[i]->id])+1);
-		memcpy(doc, lines[searchInfo[i]->id], strlen(lines[searchInfo[i]->id]));
-		doc[strlen(lines[searchInfo[i]->id])] = 0;
-		char * word = strtok(doc, " \t\0");
-		int cursorPosition = indentSize;
-
-		char * indicators = malloc(windowWidth * sizeof(char)+1);
-		for(int i=0; i<windowWidth; i++)
-			indicators[i] = ' ';
-		indicators[windowWidth] = 0;
+		doc = copyDocument(lines[searchInfo[i]->id]);				//Get a copy of the document
+		word = strtok(doc, " \t\0");								//Get the first word of that document
+		cursorPosition = indentSize;								//Set the cursor position at the indent size
 
 		do{
-			if(word == NULL) break;
-			if(cursorPosition + strlen(word) + 1 > windowWidth){
-				for(int i=cursorPosition; i<windowWidth; i++)
+			if(word == NULL) break;									//If strtok returns NULL (meaning there are no more words)
+			if(cursorPosition + strlen(word) + 1 > windowWidth){	//If the next word won't fit in the current line, we have to first print the indicators and then start a new line
+				for(int i=cursorPosition; i<windowWidth; i++)		//Fill up the rest of the indicators string with whitespace characters
 					indicators[i] = ' ';
-				printf("\n");
-				printf("%s\n", indicators);
+				printf("\n");										//Go to a new line
+				printf("%s\n", indicators);							//Print indicators string
 				for(int j=0; j<indentSize; j++){
-		 			printf(" ");
-					indicators[i] = ' ';
+		 			printf(" ");									//Print white space characters until we reach the predetermined indent point
+					indicators[j] = ' ';							//Fill the indent part of the indicators string with whitespace characters
 				}
-				cursorPosition = indentSize;
+				cursorPosition = indentSize;						//Set the cursor at the indent size, ready to be used for the next line
 			}
-			if(isSearchTerm(word,searchTerms)){
-				for(int i=cursorPosition; i<cursorPosition+strlen(word); i++)
-					indicators[i] = '^';
+			if(isSearchTerm(word,searchTerms)){						//If the word we are about to print is a search term
+				for(int i=0; i<strlen(word); i++)
+					indicators[cursorPosition + i] = '^';			//Fill the indicators string with '^' character for the full width of that word
 				indicators[cursorPosition+strlen(word)] = ' ';
 			}
-			else
+			else													//If the word is not a search term just fill the indicators string with whitespace characters
 				for(int i=cursorPosition; i<cursorPosition+strlen(word)+1; i++)
 					indicators[i] = ' ';
-			printf("%s ", word);
-			cursorPosition += strlen(word) + 1;
-			word = strtok(NULL, " \t\0");
+
+			printf("%s ", word);									//Print the word
+			cursorPosition += strlen(word) + 1;						//Update cursor position
+			word = strtok(NULL, " \t\0");							//Get the next word
 		} while (word != NULL);
-		
-		for(int i=cursorPosition; i<windowWidth; i++)
+
+		for(int i=cursorPosition; i<windowWidth; i++)				//Print the indicators for the very last line
 			indicators[i] = ' ';
-		printf("\n");
-		printf("%s", indicators);
-		// for(int k=0; k<strlen(lines[searchInfo[i]->id]); k++){
-		// 	if(k!=0 && k%(windowWidth-indentSize) == 0){
-		// 		printf("\n");
-		// 		for(int j=0; j<indentSize; j++)
-		// 			printf(" ");
-		// 	}
-		// 	fputc(lines[searchInfo[i]->id][k], stdout);
-		// }
-		printf("\n\n");
-		free(doc);
-		free(indicators);
+		printf("\n%s\n\n", indicators);
+		free(doc);													//Deallocate copied document
 	}
+	free(indicators);												//Deallocate indicators string
 }
