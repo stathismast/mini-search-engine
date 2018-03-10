@@ -1,5 +1,6 @@
 #include "searchInfo.h"
 
+int getWindowWidth();
 int getOffset(int i);
 void printCounter(int counter, int offset);
 void printID(int id, int width);

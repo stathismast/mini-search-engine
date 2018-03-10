@@ -2,6 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+
+int getWindowWidth(){
+	struct winsize w;
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+	return w.ws_col;
+}
 
 int getOffset(int i){
 	int offset = 0;
@@ -62,11 +70,13 @@ int isSearchTerm(char * term, char ** searchTerms){
 }
 
 void printSearchResults(int k, int lineCounter, SearchInfo ** searchInfo, char ** lines, char ** searchTerms){
+	int windowWidth	= getWindowWidth();
+	int offset = getOffset(k);
+	int idWidth = getOffset(lineCounter)+1;
+	int precision = 6;
+	int indentSize = offset + idWidth + precision + 9;
+
 	for(int i=0; i<k; i++){
-		int offset = getOffset(k);
-		int idWidth = getOffset(lineCounter)+1;
-		int precision = 6;
-		int indentSize = offset + idWidth + precision + 9;
 		printCounter(i+1,offset);
 		printID(searchInfo[i]->id,idWidth);
 		printScore(searchInfo[i]->score,precision);
@@ -78,15 +88,15 @@ void printSearchResults(int k, int lineCounter, SearchInfo ** searchInfo, char *
 		char * word = strtok(doc, " \t\0");
 		int cursorPosition = indentSize;
 
-		char * indicators = malloc(118 * sizeof(char)+1);
-		for(int i=0; i<118; i++)
+		char * indicators = malloc(windowWidth * sizeof(char)+1);
+		for(int i=0; i<windowWidth; i++)
 			indicators[i] = ' ';
-		indicators[118] = 0;
+		indicators[windowWidth] = 0;
 
 		do{
 			if(word == NULL) break;
-			if(cursorPosition + strlen(word) + 1 > 118){
-				for(int i=cursorPosition; i<118; i++)
+			if(cursorPosition + strlen(word) + 1 > windowWidth){
+				for(int i=cursorPosition; i<windowWidth; i++)
 					indicators[i] = ' ';
 				printf("\n");
 				printf("%s\n", indicators);
@@ -108,10 +118,13 @@ void printSearchResults(int k, int lineCounter, SearchInfo ** searchInfo, char *
 			cursorPosition += strlen(word) + 1;
 			word = strtok(NULL, " \t\0");
 		} while (word != NULL);
+		
+		for(int i=cursorPosition; i<windowWidth; i++)
+			indicators[i] = ' ';
 		printf("\n");
 		printf("%s", indicators);
 		// for(int k=0; k<strlen(lines[searchInfo[i]->id]); k++){
-		// 	if(k!=0 && k%(118-indentSize) == 0){
+		// 	if(k!=0 && k%(windowWidth-indentSize) == 0){
 		// 		printf("\n");
 		// 		for(int j=0; j<indentSize; j++)
 		// 			printf(" ");
