@@ -49,7 +49,7 @@ void commandInputLoop(int k, int lineCounter, char ** lines, int * wordCounter, 
 		else if(strcmp(command, "/tf") == 0)				//If /tf is given, call the appropriate function to execute the functionallity command
 			tf(trie);
 		else if(strcmp(command, "/search") == 0)			//If /search is given, call the appropriate function to execute the functionallity command
-			search(k,wordCounter,avgWordCount,lineCounter,trie);
+			search(k,wordCounter,avgWordCount,lineCounter,lines,trie);
 
 		//If /help is given, display some information about the available commands
 		else if(strcmp(command, "/help") == 0 && strtok(NULL, " \t\n") == NULL){
@@ -161,16 +161,25 @@ int getTermFrequency(int id, char * word, TrieNode * node){
 }
 
 //Prints out the results of a /search command
-void search(int k, int * wordCounter, double avgWordCount, int lineCounter, TrieNode * trie){
-	AVLTree * tree = NULL;		//Tree used to compile the scores for each id that contains any of the search terms
-	SearchInfo ** searchInfo;	//Array of pointers to SearchInfo nodes used to sort the nodes by their scores after they have been compiled together
-	int docCounter = 0;			//Number of different ids that cointain any of the given search terms
-	int start = 0;				//Integer used by the fucntion that converts the AVL tree to an array of SearchInfo nodes
+void search(int k, int * wordCounter, double avgWordCount, int lineCounter, char ** lines, TrieNode * trie){
+	AVLTree * tree = NULL;			//Tree used to compile the scores for each id that contains any of the search terms
+	SearchInfo ** searchInfo;		//Array of pointers to SearchInfo nodes used to sort the nodes by their scores after they have been compiled together
+	int docCounter = 0;				//Number of different ids that cointain any of the given search terms
+	int start = 0;					//Integer used by the fucntion that converts the AVL tree to an array of SearchInfo nodes
+	char * searchTerms[10] = {NULL};//Array for the first 10 search terms given
+	char * term;					//Temporary 'string' used to store search terms
+
+	for(int i=0; i<10; i++)								//Read and store every search term
+		if((term = strtok(NULL, " \t\n")) != NULL){		//Check the token/term
+			searchTerms[i] = malloc(strlen(term)+1);	//Allocate space for it
+			memcpy(searchTerms[i], term, strlen(term));	//Store it
+			searchTerms[i][strlen(term)] = 0;			//Add a null character at the end of the string
+		}
 
 	//For every search term and for every id that search term is in, this fucntion
 	//calculates the score and stores it in an AVL tree. It also counts how many
 	//different ids the search terms are in
-	loadTermsIntoTree(&tree, &docCounter, wordCounter, avgWordCount, lineCounter, trie);
+	loadTermsIntoTree(&tree, searchTerms, &docCounter, wordCounter, avgWordCount, lineCounter, trie);
 
 	//Allocate space for as many SearchInfo nodes as there are nodes in the AVL tree
 	searchInfo = newSearchInfoArray(docCounter);
@@ -186,18 +195,22 @@ void search(int k, int * wordCounter, double avgWordCount, int lineCounter, Trie
 
 
 	if(k > docCounter) k = docCounter;	//If k is greater than the total number of results
-	for(int i=0; i<k; i++){				//Print out the results
-		printf("%d.\t(%d)\t[%f]\n", i+1, searchInfo[i]->id, searchInfo[i]->score);
-	}
+	printSearchResults(k,lineCounter,searchInfo,lines,searchTerms);
+
+	for(int i=0; i<10; i++)							//Deallocate space used for every search term
+		if(searchTerms[i] != NULL)
+			free(searchTerms[i]);
+		else break;
 	freeSearchInfoArray(searchInfo, docCounter);	//Deallocate space used for the SearchInfo array
 }
 
 //Using the given trie and the /search arguments, calculatre the score for each
-//term in each id. If an id contains more than one of the search terms, the scores will be added together
-void loadTermsIntoTree(AVLTree ** tree, int * docCounter, int * wordCounter, double avgWordCount, int lineCounter, TrieNode * trie){
-	char * searchTerm;	//String for each search term
-	while((searchTerm = strtok(NULL, " \t\n")) != NULL){			//For every given search term
-		PostingListHead * pl = getPostingList(searchTerm, trie);	//Search for its posting list
+//term in each id. If an id contains more than one of the search terms, the
+//scores will be added together
+void loadTermsIntoTree(AVLTree ** tree, char ** searchTerms, int * docCounter, int * wordCounter, double avgWordCount, int lineCounter, TrieNode * trie){
+	for(int i=0; i<10; i++){										//For a maximum of 10 terms
+		if(searchTerms[i] == NULL) break;							//If there are less than 10 terms given, break
+		PostingListHead * pl = getPostingList(searchTerms[i], trie);//Search for its posting list
 		if(pl != NULL){												//If it has a posting list
 			int docFreq = pl->documentFreq;							//Store the document frequency of that word
 			PostingListNode * node = pl->next;						//Get the first node after the posting list head
