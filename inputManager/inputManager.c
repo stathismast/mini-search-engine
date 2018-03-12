@@ -16,54 +16,60 @@ int firstRead(FILE * input, LineInfo ** head){
 								//if we are at the start of a new line. That way
 								//we now that we need to check if the id of that line is correct
 
-	while(1){					//Will 'break' when we reach EOF
-		c = fgetc(input);
-		if(c == EOF) break;
-		if(isNewLine){
-			if(c == '\n'){	//If we get a new line character while expecting to read the id: the current line has no content
-				printf("ERROR: Line %d has no content.\n", lineCounter);
-				freeCharList(cl);
-				freeLineInfo(*head);
-				return -1;
-			}
-			if(c != ' ' && c != '\t')	//If we still are reading the id
-				if(c > 47 && c < 58){	//If the char we read is a numeral, we append it to out charList
-					appendToCharList(c, &cl);
-				}
-				else{	//If the char is not a numeral, the input is invalid, because we are still reading the id part of the line
-					printf("ERROR: Input file is not of valid format.\n");
+	char buffer[4096];
+	size_t bytesRead;
+
+	while((bytesRead = fread(buffer, 1, 4096, input)) > 0){
+		for(int i=0; i<(int)bytesRead; i++){
+			c = buffer[i];
+			if(c == EOF) break;
+			if(isNewLine){
+				if(c == '\n'){	//If we get a new line character while expecting to read the id: the current line has no content
+					printf("ERROR: Line %d has no content.\n", lineCounter);
+					freeCharList(cl);
 					freeLineInfo(*head);
 					return -1;
 				}
-			else //When we get a whitespace (space or tab) character, the id part of the line has been read
-				isNewLine = 0;
-		}
-		else	//If 'isNewLine' is FALSE we just increase the counter of characters for this line
-			node->letterCount++;
-
-		if(c == '\n'){	//If we are the end of a line
-			char * idStr = charListToString(cl);	//Convert CharList containing the id to string
-			freeCharList(cl);						//Deallocate CharList
-			int id = atoi(idStr);					//Convert the id string to integer
-			free(idStr);							//Deallocate string
-			cl = NULL;								//Reset CharList to NULL to be used for the next line
-
-			if(lineCounter != id){	//Check if the id of the line is correct
-				printf("ERROR: IDs are not in order. (Line %d)\n", lineCounter);
-				freeLineInfo(*head);
-				return -1;
+				if(c != ' ' && c != '\t')	//If we still are reading the id
+					if(c > 47 && c < 58){	//If the char we read is a numeral, we append it to out charList
+						appendToCharList(c, &cl);
+					}
+					else{	//If the char is not a numeral, the input is invalid, because we are still reading the id part of the line
+						printf("ERROR: Input file is not of valid format. (line %d)\n", lineCounter);
+						freeCharList(cl);
+						freeLineInfo(*head);
+						return -1;
+					}
+				else //When we get a whitespace (space or tab) character, the id part of the line has been read
+					isNewLine = 0;
 			}
-			//If there is nothing after the id of a line, it has no content.
-			//Though, if there is even one character (even a whitespace
-			//character) it will not produce this error.
-			if(node->letterCount <= 1){
-				printf("ERROR: Line %d has no content.\n", lineCounter);
-				freeLineInfo(*head);
-				return -1;
+			else	//If 'isNewLine' is FALSE we just increase the counter of characters for this line
+				node->letterCount++;
+
+			if(c == '\n'){	//If we are the end of a line
+				char * idStr = charListToString(cl);	//Convert CharList containing the id to string
+				freeCharList(cl);						//Deallocate CharList
+				int id = atoi(idStr);					//Convert the id string to integer
+				free(idStr);							//Deallocate string
+				cl = NULL;								//Reset CharList to NULL to be used for the next line
+
+				if(lineCounter != id){	//Check if the id of the line is correct
+					printf("ERROR: IDs are not in order. (Line %d)\n", lineCounter);
+					freeLineInfo(*head);
+					return -1;
+				}
+				//If there is nothing after the id of a line, it has no content.
+				//Though, if there is even one character (even a whitespace
+				//character) it will not produce this error.
+				if(node->letterCount <= 1){
+					printf("ERROR: Line %d has no content.\n", lineCounter);
+					freeLineInfo(*head);
+					return -1;
+				}
+				lineCounter++;					//Increase the total number of lines
+				node = addToLineInfo(&node);	//Create new node for the list that holds the length of each line
+				isNewLine = 1;					//Change to '1' to denote that we are about to read a new line
 			}
-			lineCounter++;					//Increase the total number of lines
-			node = addToLineInfo(&node);	//Create new node for the list that holds the length of each line
-			isNewLine = 1;					//Change to '1' to denote that we are about to read a new line
 		}
 	}
 	freeCharList(cl);						//Deallocate CharList
@@ -80,6 +86,10 @@ char ** secondRead(FILE * input, int lineCounter, LineInfo * head){
 	int isNewLine = 1;		//Integer used as a boolean. Has a value of '1'
 							//if we are at the start of a new line. That way
 							//we now that we need to check if the id of that line is correct
+	char buffer[4096];
+	size_t bytesRead;
+	int pos = 0;
+	bytesRead = fread(buffer, 1, 4096, input);
 
 	//Allocate space for each line
 	lines = malloc(lineCounter*sizeof(char*));
@@ -95,14 +105,16 @@ char ** secondRead(FILE * input, int lineCounter, LineInfo * head){
 			if(isNewLine){	//If this is a new line
 				//Consume characters that represent the id because it was accounted for in the first read through
 				do{
-					c = fgetc(input);
-				}while (c != ' ' && c != '\t');
+					if(pos < bytesRead) pos++;
+					else { bytesRead = fread(buffer, 1, 4096, input); pos = 0; }
+				}while (buffer[pos] != ' ' && buffer[pos] != '\t');
 				isNewLine = 0;
 			}
 			//After the id has been consumed we can store the line
-			c = fgetc(input);
-			if(c != '\n'){
-				lines[i][j] = c;
+			if(pos < bytesRead) pos++;
+			else { bytesRead = fread(buffer, 1, 4096, input); pos = 0; }
+			if(buffer[pos] != '\n'){
+				lines[i][j] = buffer[pos];
 			}
 			else{
 				//When we read the new line char, that means the line is over
