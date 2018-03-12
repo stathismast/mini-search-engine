@@ -105,13 +105,13 @@ char ** secondRead(FILE * input, int lineCounter, LineInfo * head){
 			if(isNewLine){	//If this is a new line
 				//Consume characters that represent the id because it was accounted for in the first read through
 				do{
-					if(pos < bytesRead) pos++;
+					if(pos < bytesRead-1) pos++;
 					else { bytesRead = fread(buffer, 1, 4096, input); pos = 0; }
 				}while (buffer[pos] != ' ' && buffer[pos] != '\t');
 				isNewLine = 0;
 			}
 			//After the id has been consumed we can store the line
-			if(pos < bytesRead) pos++;
+			if(pos < bytesRead-1) pos++;
 			else { bytesRead = fread(buffer, 1, 4096, input); pos = 0; }
 			if(buffer[pos] != '\n'){
 				lines[i][j] = buffer[pos];
