@@ -7,6 +7,8 @@
 //Disclaimer: A line is considered only if it has '\n' at the end of it
 int firstRead(FILE * input, LineInfo ** head){
 	char c;
+	char buffer[4096];			//Buffer used in take input from file
+	size_t bytesRead;			//Number of bytes read from input file
 	addToLineInfo(head);		//Initialize the list that keeps the length of each line
 	LineInfo * node = *head;	//Node used to access LineInfo list
 	int lineCounter = 0;		//Counts how many lines are in the file
@@ -16,8 +18,7 @@ int firstRead(FILE * input, LineInfo ** head){
 								//if we are at the start of a new line. That way
 								//we now that we need to check if the id of that line is correct
 
-	char buffer[4096];
-	size_t bytesRead;
+
 
 	while((bytesRead = fread(buffer, 1, 4096, input)) > 0){
 		for(int i=0; i<(int)bytesRead; i++){
@@ -80,21 +81,22 @@ int firstRead(FILE * input, LineInfo ** head){
 //Go through the file, allocate space for and store each line - knowing the
 //number of lines and the length of each line. Returns an array of string. One string for each line.
 char ** secondRead(FILE * input, int lineCounter, LineInfo * head){
-	char c;
+	char buffer[4096];		//Buffer used in take input from file
+	size_t bytesRead;		//Number of bytes read from input file
+	int pos = 0;			//Integer used to store the position of the next character in the input file
 	char ** lines;			//Array of strings to store each line into
 	LineInfo * node = head;	//Node used to access LineInfo list
 	int isNewLine = 1;		//Integer used as a boolean. Has a value of '1'
 							//if we are at the start of a new line. That way
 							//we now that we need to check if the id of that line is correct
-	char buffer[4096];
-	size_t bytesRead;
-	int pos = 0;
+
 	bytesRead = fread(buffer, 1, 4096, input);
+	pos = 0;
 
 	//Allocate space for each line
 	lines = malloc(lineCounter*sizeof(char*));
 	for(int i=0; i<lineCounter; i++){
-		lines[i] = malloc(node->letterCount * sizeof(char));\
+		lines[i] = malloc(node->letterCount * sizeof(char));
 		node = node->next;	//Get the LineInfo node for the next line
 	}
 

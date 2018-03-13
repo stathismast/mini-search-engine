@@ -83,6 +83,7 @@ void printSearchResults(int k, int lineCounter, SearchInfo ** searchInfo, char *
 	char * word;		//String used to store a word of a document to check if it is a search term
 	int cursorPosition;	//Curson position, used to place the idicators under every search term that is in the document
 	char * indicators;	//String used to store the positions of each indicator in order to appear under each search term of a document
+						//This is printed after we print each line from the document
 
 	indicators = malloc(windowWidth * sizeof(char)+1);	//Allocate space for 'indicators' string equal to the width of the window/terminal
 	for(int i=0; i<windowWidth; i++)					//Initialize indicators to ' '
@@ -90,7 +91,7 @@ void printSearchResults(int k, int lineCounter, SearchInfo ** searchInfo, char *
 	indicators[windowWidth] = 0;						//Add a null character at the end
 
 	for(int i=0; i<k; i++){											//For every search result
-		printCounter(i+1,offset);									//Print the ascending number
+		printCounter(i+1,offset);									//Print the ascending order number
 		printID(searchInfo[i]->id,idWidth);							//Print the id
 		printScore(searchInfo[i]->score,scorePresision);			//Print the score
 		printf(" ");
@@ -100,7 +101,7 @@ void printSearchResults(int k, int lineCounter, SearchInfo ** searchInfo, char *
 		cursorPosition = indentSize;								//Set the cursor position at the indent size
 
 		do{
-			if(word == NULL) break;									//If strtok returns NULL (meaning there are no more words)
+			if(word == NULL) break;									//If strtok returns NULL (meaning there are no more words), we just break out of the loop
 			if(cursorPosition + strlen(word) + 1 > windowWidth){	//If the next word won't fit in the current line, we have to first print the indicators and then start a new line
 				for(int i=cursorPosition; i<windowWidth; i++)		//Fill up the rest of the indicators string with whitespace characters
 					indicators[i] = ' ';
