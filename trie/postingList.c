@@ -4,7 +4,7 @@
 //Create and initialize a new posting list head
 PostingListHead * newPostingListHead(){
 	PostingListHead * head = malloc(sizeof(PostingListHead));
-	head->documentFreq = 1;
+	head->documentFreq = 0;
 	return head;
 }
 
@@ -35,17 +35,19 @@ void freePostingListNode(PostingListNode * node){
 void addToPostingList(int id, PostingListHead ** head){
 	if(*head == NULL){							//If there is no posting list for this letter
 		(*head) = newPostingListHead();			//Create a new posting list head
+		(*head)->documentFreq++;				//Increase the document frequency
 		(*head)->next = newPostingListNode(id);	//Add a posting list node to the head
+		(*head)->last = (*head)->next;			//Update pointer to last node of list
 	}
 	else{ //If there is a posting list already
-		PostingListNode ** node = &((*head)->next);
-		PostingListNode ** postingList = getPosting(id, node);	//Find the posting for the given id
-		if(*postingList == NULL){								//If there is no posting list for the given id
-			(*postingList) = newPostingListNode(id);			//Create a new posting list node
-			(*head)->documentFreq++;							//Increase the total number of documents this word is in
+		PostingListNode ** node = &(*head)->last;
+		if((*node)->id != id){							//If there is no posting list for the given id
+			(*node)->next = newPostingListNode(id);		//Create a new posting list node
+			(*head)->documentFreq++;					//Increase the total number of documents this word is in
+			(*head)->last = (*node)->next;				//Update pointer to last node
 		}
-		else{ 							//If there is already a posting list node for the given id
-			(*postingList)->count++;	//Just increase the count for that node
+		else{ 											//If there is already a posting list node for the given id
+			(*node)->count++;							//Just increase the count for that node
 		}
 	}
 }

@@ -6,6 +6,7 @@
 typedef struct PostingListHead{
 	int documentFreq;				//Document frequency of the word
 	struct PostingListNode * next;	//Pointer to the first posting list node
+	struct PostingListNode * last;	//Pointer to the last node of the list
 } PostingListHead;
 
 //Contains the term frequency (count) for a given document id as well as a pointer to the next posting list node
