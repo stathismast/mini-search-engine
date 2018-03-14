@@ -43,8 +43,8 @@ lineInfo.c/.h      : Simple list of integers used to store the length of each
 postingList.c/.h   : Posting list data structure. It includes posting list
                      head and node structs. The head stores the document
                      frequency and each node the term frequency for a given id.
-searchInfo.c/.h    : Simple structure, used in the implementation of /search
-                     to store the score of each document id for a given query
+maxHeap.c/.h       : Max heap implementation, used to get the top-k (in terms
+                     of score) elements from each search query.
 searchResults.c/.h : Contains a set of functions used to print out the results
                      of the /search command.
 trie.c/.h          : Trie data structure as described in the assignment
@@ -61,20 +61,19 @@ Below are some brief explanations on some of the most important operations.
 Note: There are detailed comments on each function and structure in the .c and
 .h files.
 
-Reading the input file:
+Reading the input file: (inputManager.c - readInputFile)
 This is split into two stages. First we go through the file, checking if the ids
 are correct, counting the length of each line and the total number of lines.
 Now that we know how long a line is, we allocate space for each line and read
-through the file once more to store every line. A line is only considered valid
-if it end in a '\n' character. Also, ids have to start from zero with formats
-like 0,1,2... or 000,001,002... etc being acceptable.
+through the file once more to store every line. Important: A line is only
+considered valid if it ends in a '\n' (newline) character.
 
-Loading every word in the trie:
+Loading every word in the trie: (trie.c - addWordsIntoTrie)
 After we have stored every line in the input file, we insert every word, letter
 by letter, in the trie. At the same time, we count the number of words in each
 line/document.
 
-/df and /tf commands:
+/df and /tf commands: (commands.c)
 When a /df commands is entered without any arguments we access the trie node by
 node checking to see if each node has a posting list. If so, it is the last
 letter of a word and so we print it alongside the document id. If /df is called
@@ -85,7 +84,7 @@ included in the given document. If it is, we print its term frequency but if any
 one of the above requirements is not true, then that word is printed out with
 and term frequency of '0' for that document.
 
-/search command:
+/search command: (commands.c)
 When the /search command is called, we first collect and store up to ten search
 terms and then for each one of those check if it is included in the trie. If so,
 we check to see which documents have that term and for each document calculate
@@ -93,19 +92,16 @@ a score. Each document id - score combination is then inserted in an AVL tree in
 order to efficiently compile the scores for each document. The scores are than
 sorted and the top k results are printed out. (more details below)
 
-AVL Tree:
+AVL Tree: (avl.c)
 I use an AVL tree to store the scores for each document when the /search command
 is used. Every time I calculate the score of a document for a certain term, I
 add the score to the AVL tree. If there is already a node for that document id
 the new score is added to the already existing one, otherwise a new node is
 created for that document id.
 
-Search Info and QuickSort:
+MaxHeap: (maxHeap.c)
 After the scores for every document have been compiled in the AVL Tree (inserted
-based on their id), the tree is converted into an array and is sorted by score
-using a QuickSort method. So, if we assume 'n' as the number of documents that
-include any of the search terms given in a /search command, the complexity of
-calculating scores for every document id, compiling them together and sorting by
-score is O(nlogn). O(n) to calculate, O(nlogn) to compile together (because in
-the AVL tree we have n insertions of O(logn) cost each) and O(nlogn) to sort,
-which keeps the total complexity to O(nlogn).
+based on their id), each node of the AVL tree is inserted into a heap, which
+always keeps the node with the greatest score at the top. That way, after the
+heap has been formed we just pop the top element k-times to get the top k
+score.
