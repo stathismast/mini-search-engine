@@ -37,15 +37,15 @@ int charListLength(CharList * charList){
 
 //Convert a charList to a string
 char * charListToString(CharList * charList){
-	int length = charListLength(charList);
-	char * string = malloc(length * sizeof(char) + 1);
+	int length = charListLength(charList);				//Get the length of the charList
+	char * string = malloc(length * sizeof(char) + 1);	//Allocate space for the string
 	CharList * node = charList;
 
-	for(int i=0; i<length; i++){
-		string[i] = node->c;
-		node = node->next;
+	for(int i=0; i<length; i++){						//For every letter in the charList
+		string[i] = node->c;							//Add that letter to the string
+		node = node->next;								//Look into the next charList node
 	}
-	string[length] = 0;	//Add null character at the end of the string
+	string[length] = 0;									//Add null character at the end of the string
 	return string;
 }
 

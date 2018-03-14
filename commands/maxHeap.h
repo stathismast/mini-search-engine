@@ -8,7 +8,7 @@ typedef struct MaxHeapNode{
 
 typedef struct MaxHeap{
 	int elementCounter;		//Number of elements in the heap
-	MaxHeapNode * array;		//Array of search info nodes
+	MaxHeapNode * array;	//Array of search info nodes
 } MaxHeap;
 
 #endif //MAXHEAP_H
