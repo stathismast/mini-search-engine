@@ -6,4 +6,4 @@
 int firstRead(FILE * input, LineInfo ** head);
 char ** secondRead(FILE * input, int lineCounter, LineInfo * head);
 char ** readInputFile(char * fileName, int * lineCounter);
-int manageArguments(int argc, char *argv[], char * fileName, int * k);
+int manageArguments(int argc, char *argv[], char ** fileName, int * k);

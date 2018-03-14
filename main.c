@@ -8,14 +8,14 @@
 int main(int argc, char *argv[]){
 
 	TrieNode * trie = NULL;	//Trie that will hold information for each word
-	char fileName[80];		//Input file name
+	char * fileName;		//Input file name
 	int k = 10;				//Argument K
 	int lineCounter;		//Number of lines in the given input file
 	char ** lines;			//Array to strings. Each string corresponds to a line of the input file
 	int * wordCounter;		//Array of integers. Each integer corresponds to the number of words in each line
 
 	//Update input file name and k based on the given arguments
-	if(manageArguments(argc, argv, fileName, &k) < 0){
+	if(manageArguments(argc, argv, &fileName, &k) < 0){
 		return -1;
 	}
 
@@ -37,6 +37,7 @@ int main(int argc, char *argv[]){
 		free(lines[i]);
 	free(lines);
 	free(wordCounter);
+	free(fileName);
 	freeTrie(trie);
 
 	return 0;

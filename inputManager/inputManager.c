@@ -161,7 +161,7 @@ char ** readInputFile(char * fileName, int * lineCounter){
 }
 
 //Manages arguments given on execution and checks for errors
-int manageArguments(int argc, char *argv[], char * fileName, int * k){
+int manageArguments(int argc, char *argv[], char ** fileName, int * k){
 	int gotInputFile = 0;		//Is true if ''-i' argument is given
 	int argumentError = 0;		//Is true if arguments are invalid
 	int invalidKArgument = 0;	//Is true if '-k' argument in specific is invalid
@@ -177,7 +177,9 @@ int manageArguments(int argc, char *argv[], char * fileName, int * k){
 	for(int i=1; i<argc; i++)
 		if(strcmp(argv[i],"-i") == 0){			//If '-i' is given
 			if(argc > i+1 && !gotInputFile){	//If there is another argument after this
-				strcpy(fileName,argv[i+1]);		//Store file name
+				printf("Length of name of input file is %d", (int)strlen(argv[i+1]));
+				(*fileName) = malloc((strlen(argv[i+1])+1)*sizeof(char));
+				strcpy(*fileName,argv[i+1]);		//Store file name
 				gotInputFile = 1;				//Set value to '1' to denote that we now have recieved an input file name
 				i++;							//Increase 'i' because we consumed the following argument as well
 			}
