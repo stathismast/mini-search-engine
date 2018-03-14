@@ -175,15 +175,15 @@ int manageArguments(int argc, char *argv[], char ** fileName, int * k){
 	//Check for each argument (this part of the code is based on an
 	//argument manager I developed for a previous assignment)
 	for(int i=1; i<argc; i++)
-		if(strcmp(argv[i],"-i") == 0){			//If '-i' is given
-			if(argc > i+1 && !gotInputFile){	//If there is another argument after this
-				printf("Length of name of input file is %d", (int)strlen(argv[i+1]));
+		if(strcmp(argv[i],"-i") == 0){				//If '-i' is given
+			if(argc > i+1 && !gotInputFile){		//If there is another argument after this
+				//Allocate space for the file name
 				(*fileName) = malloc((strlen(argv[i+1])+1)*sizeof(char));
 				strcpy(*fileName,argv[i+1]);		//Store file name
-				gotInputFile = 1;				//Set value to '1' to denote that we now have recieved an input file name
-				i++;							//Increase 'i' because we consumed the following argument as well
+				gotInputFile = 1;					//Set value to '1' to denote that we now have recieved an input file name
+				i++;								//Increase 'i' because we consumed the following argument as well
 			}
-			else{								//More than one '-i' given or there is no argument after '-i'
+			else{									//More than one '-i' given or there is no argument after '-i'
 				argumentError = 1;
 				break;
 			}
