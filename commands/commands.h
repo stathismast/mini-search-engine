@@ -17,5 +17,6 @@ int getTermFrequency(int id, char * word, TrieNode * node);
 
 void search(int k, int * wordCounter, double avgWordCount, int lineCounter, char ** lines, TrieNode * trie);
 void loadTermsIntoTree(AVLTree ** tree, char ** searchTerms, int * docCounter, int * wordCounter, double avgWordCount, int lineCounter, TrieNode * trie);
+void freeSearchTermsArray(char ** array);
 double getScore(int tf, int wordCount, double avgWordCount, int lineCounter, int docFreq);
 double getIDF(int lineCounter, int docFreq);

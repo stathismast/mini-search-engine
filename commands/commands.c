@@ -42,6 +42,7 @@ void commandInputLoop(int k, int lineCounter, char ** lines, int * wordCounter, 
 
 		if(strcmp(command, "/exit") == 0){					//If exit command is given: exit
 			free(command);									//Even if it has arguments after it (for example: /exit <anything>) the program still exits
+			printf("Exiting...\n");
 			break;
 		}
 		else if(strcmp(command, "/df") == 0)				//If /df is given, call the appropriate function to execute the functionallity command
@@ -148,7 +149,7 @@ int getTermFrequency(int id, char * word, TrieNode * node){
 				if(*plNode == NULL) return 0;						//If there is no postingList for this id
 				return (*plNode)->count;							//Return the term frequency of this it-term combination
 			}
-			else return 0;								//If it doesn't have a posting list, its not an included word
+			else return 0;											//If it doesn't have a posting list, its not an included word
 
 		//If this isn't yet the last letter of the given word, check for the next letter
 		return getTermFrequency(id, word+1, node->nextLetter);
@@ -180,6 +181,12 @@ void search(int k, int * wordCounter, double avgWordCount, int lineCounter, char
 	//different ids the search terms are in
 	loadTermsIntoTree(&tree, searchTerms, &docCounter, wordCounter, avgWordCount, lineCounter, trie);
 
+	if(docCounter == 0){					//If no search terms exists in any of the documents
+		freeAVLTree(tree);					//Deallocate space used for the AVL tree
+		freeSearchTermsArray(searchTerms);	//Deallcoate space used for each search term
+		return;								//And return
+	}
+
 	//Allocate space for a MaxHeap with as many nodes as there in the AVL tree
 	heap = newMaxHeap(docCounter);
 
@@ -193,10 +200,7 @@ void search(int k, int * wordCounter, double avgWordCount, int lineCounter, char
 	if(k > docCounter) k = docCounter;	//If k is greater than the total number of results
 	printSearchResults(k,lineCounter,heap,lines,searchTerms);
 
-	for(int i=0; i<10; i++)				//Deallocate space used for every search term
-		if(searchTerms[i] != NULL)
-			free(searchTerms[i]);
-		else break;
+	freeSearchTermsArray(searchTerms);	//Deallcoate space used for each search term
 	freeMaxHeap(heap);					//Deallocate space used for the MaxHeap
 }
 
@@ -218,6 +222,14 @@ void loadTermsIntoTree(AVLTree ** tree, char ** searchTerms, int * docCounter, i
 			}
 		}
 	}
+}
+
+//Deallocate space of a given array of string - used to store search terms
+void freeSearchTermsArray(char ** array){
+	for(int i=0; i<10; i++)
+		if(array[i] != NULL)
+			free(array[i]);
+		else break;
 }
 
 //Given a term frequency of a word in a line, the word count of a line, the
