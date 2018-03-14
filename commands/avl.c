@@ -110,7 +110,7 @@ void leftRightRotate(AVLTree ** node){
 int insertToAVL(int id, double score, AVLTree ** tree){
 	int nodeAdded = 0;	//Is true if during this insertion a new node is created
 						//and added in the AVL tree. We need this information to
-						//know how large the SearchInfo array will be after we
+						//know how large the MaxHeap array will be after we
 						//have compiled all the id-scores in the AVL tree
 
 	if(*tree == NULL){					//If there is no node in the given pointer
@@ -147,13 +147,11 @@ int insertToAVL(int id, double score, AVLTree ** tree){
 	return nodeAdded;			//Return whether or not we added a new node into the Tree
 }
 
-//Convert the given tree into an array of pointers to SearchInfo nodes
-void avlToSearchInfoArray(AVLTree * tree, SearchInfo ** array, int * start){
-	if(tree == NULL || array == NULL || start == NULL) return;
+//Add each element of an AVL Tree into a MaxHeap
+void avlToMaxHeap(AVLTree * tree, MaxHeap ** heap){
+	if(tree == NULL || heap == NULL) return;
 
-	array[*start]->id = tree->id;					//Store the id into the array
-	array[*start]->score = tree->score;				//Store the score into the array
-	(*start)++;										//Increase the 'start' to show the next available point in the array
-	avlToSearchInfoArray(tree->left, array, start);	//Insert the left child
-	avlToSearchInfoArray(tree->right, array, start);//Insert the right child
+	pushToHeap(*heap,tree->id,tree->score);
+	avlToMaxHeap(tree->left, heap);		//Insert the left child
+	avlToMaxHeap(tree->right, heap);	//Insert the right child
 }

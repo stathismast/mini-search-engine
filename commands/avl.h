@@ -21,4 +21,4 @@ void rightRotate(AVLTree ** node);
 void rightLeftRotate(AVLTree ** node);
 void leftRightRotate(AVLTree ** node);
 int insertToAVL(int id, double score, AVLTree ** tree);
-void avlToSearchInfoArray(AVLTree * tree, SearchInfo ** array, int * start);
+void avlToMaxHeap(AVLTree * tree, MaxHeap ** heap);

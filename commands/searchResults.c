@@ -72,7 +72,7 @@ char * copyDocument(char * document){
 	return copy;
 }
 
-void printSearchResults(int k, int lineCounter, SearchInfo ** searchInfo, char ** lines, char ** searchTerms){
+void printSearchResults(int k, int lineCounter, MaxHeap * heap, char ** lines, char ** searchTerms){
 	int windowWidth	= getWindowWidth();						//Terminal/window width
 	int offset = getNumberOfDigits(k);						//Offset used to allign the ascending number at the start of every search result
 	int idWidth = getNumberOfDigits(lineCounter);			//Number of digits in the lineCounter, which is also the maximum number of digits that any document id will have
@@ -90,13 +90,14 @@ void printSearchResults(int k, int lineCounter, SearchInfo ** searchInfo, char *
 		indicators[i] = ' ';
 	indicators[windowWidth] = 0;						//Add a null character at the end
 
+	SearchInfo searchInfo = popFromHeap(heap);						//Top element from MaxHeap
 	for(int i=0; i<k; i++){											//For every search result
 		printCounter(i+1,offset);									//Print the ascending order number
-		printID(searchInfo[i]->id,idWidth);							//Print the id
-		printScore(searchInfo[i]->score,scorePresision);			//Print the score
+		printID(searchInfo.id,idWidth);								//Print the id
+		printScore(searchInfo.score,scorePresision);				//Print the score
 		printf(" ");
 
-		doc = copyDocument(lines[searchInfo[i]->id]);				//Get a copy of the document
+		doc = copyDocument(lines[searchInfo.id]);					//Get a copy of the document
 		word = strtok(doc, " \t\0");								//Get the first word of that document
 		cursorPosition = indentSize;								//Set the cursor position at the indent size
 
@@ -131,6 +132,7 @@ void printSearchResults(int k, int lineCounter, SearchInfo ** searchInfo, char *
 			indicators[i] = ' ';
 		printf("\n%s\n\n", indicators);
 		free(doc);													//Deallocate copied document
+		searchInfo = popFromHeap(heap);								//Get the next top element from the heap
 	}
 	free(indicators);												//Deallocate indicators string
 }

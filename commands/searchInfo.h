@@ -6,9 +6,17 @@ typedef struct SearchInfo{
     double score;	//Score of given document id
 } SearchInfo;
 
+typedef struct MaxHeap{
+	int last;
+	SearchInfo * array;
+} MaxHeap;
+
 #endif //SEARCHINFO_H
 
-SearchInfo ** newSearchInfoArray(int size);
-void freeSearchInfoArray(SearchInfo ** array, int size);
-void swap(SearchInfo ** a, SearchInfo ** b);
-void quicksort(SearchInfo ** array, int start, int finish);
+MaxHeap * newMaxHeap(int size);
+void freeMaxHeap(MaxHeap * heap);
+void swap(SearchInfo * a, SearchInfo * b);
+void heapify(MaxHeap * heap, int root);
+void pushToHeap(MaxHeap * heap, int id, double score);
+void printHeap(MaxHeap * heap);
+SearchInfo popFromHeap(MaxHeap * heap);

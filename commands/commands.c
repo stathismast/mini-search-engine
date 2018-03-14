@@ -163,9 +163,8 @@ int getTermFrequency(int id, char * word, TrieNode * node){
 //Prints out the results of a /search command
 void search(int k, int * wordCounter, double avgWordCount, int lineCounter, char ** lines, TrieNode * trie){
 	AVLTree * tree = NULL;			//Tree used to compile the scores for each id that contains any of the search terms
-	SearchInfo ** searchInfo;		//Array of pointers to SearchInfo nodes used to sort the nodes by their scores after they have been compiled together
+	MaxHeap * heap;					//MaxHeap used to sort scores-ids by score and pop the top-k results
 	int docCounter = 0;				//Number of different ids that cointain any of the given search terms
-	int start = 0;					//Integer used by the fucntion that converts the AVL tree to an array of SearchInfo nodes
 	char * searchTerms[10] = {NULL};//Array for the first 10 search terms given
 	char * term;					//Temporary 'string' used to store search terms
 
@@ -181,27 +180,24 @@ void search(int k, int * wordCounter, double avgWordCount, int lineCounter, char
 	//different ids the search terms are in
 	loadTermsIntoTree(&tree, searchTerms, &docCounter, wordCounter, avgWordCount, lineCounter, trie);
 
-	//Allocate space for as many SearchInfo nodes as there are nodes in the AVL tree
-	searchInfo = newSearchInfoArray(docCounter);
+	//Allocate space for a MaxHeap with as many nodes as there in the AVL tree
+	heap = newMaxHeap(docCounter);
 
-	//Convert the AVL Tree into an array of SearchInfo nodes, ready to be sorted by 'score'
-	avlToSearchInfoArray(tree, searchInfo, &start);
+	//Insert all the elements of the AVL tree to a MaxHeap one by one
+	//Once this is done we can easily pop the top-k elements from the heap
+	avlToMaxHeap(tree, &heap);
 
 	//Deallocate space used in the AVL tree
 	freeAVLTree(tree);
 
-	//Sort the array of SearchInfo nodes by score.
-	quicksort(searchInfo, 0, docCounter-1);
-
-
 	if(k > docCounter) k = docCounter;	//If k is greater than the total number of results
-	printSearchResults(k,lineCounter,searchInfo,lines,searchTerms);
+	printSearchResults(k,lineCounter,heap,lines,searchTerms);
 
-	for(int i=0; i<10; i++)							//Deallocate space used for every search term
+	for(int i=0; i<10; i++)				//Deallocate space used for every search term
 		if(searchTerms[i] != NULL)
 			free(searchTerms[i]);
 		else break;
-	freeSearchInfoArray(searchInfo, docCounter);	//Deallocate space used for the SearchInfo array
+	freeMaxHeap(heap);					//Deallocate space used for the MaxHeap
 }
 
 //Using the given trie and the /search arguments, calculatre the score for each
