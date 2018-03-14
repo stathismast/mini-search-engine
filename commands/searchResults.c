@@ -90,14 +90,14 @@ void printSearchResults(int k, int lineCounter, MaxHeap * heap, char ** lines, c
 		indicators[i] = ' ';
 	indicators[windowWidth] = 0;						//Add a null character at the end
 
-	SearchInfo searchInfo = popFromHeap(heap);						//Top element from MaxHeap
+	MaxHeapNode node = popFromHeap(heap);						//Top element from MaxHeap
 	for(int i=0; i<k; i++){											//For every search result
 		printCounter(i+1,offset);									//Print the ascending order number
-		printID(searchInfo.id,idWidth);								//Print the id
-		printScore(searchInfo.score,scorePresision);				//Print the score
+		printID(node.id,idWidth);								//Print the id
+		printScore(node.score,scorePresision);				//Print the score
 		printf(" ");
 
-		doc = copyDocument(lines[searchInfo.id]);					//Get a copy of the document
+		doc = copyDocument(lines[node.id]);					//Get a copy of the document
 		word = strtok(doc, " \t\0");								//Get the first word of that document
 		cursorPosition = indentSize;								//Set the cursor position at the indent size
 
@@ -132,7 +132,7 @@ void printSearchResults(int k, int lineCounter, MaxHeap * heap, char ** lines, c
 			indicators[i] = ' ';
 		printf("\n%s\n\n", indicators);
 		free(doc);													//Deallocate copied document
-		searchInfo = popFromHeap(heap);								//Get the next top element from the heap
+		node = popFromHeap(heap);								//Get the next top element from the heap
 	}
 	free(indicators);												//Deallocate indicators string
 }

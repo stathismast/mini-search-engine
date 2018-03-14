@@ -1,4 +1,4 @@
-#include "searchInfo.h"
+#include "maxHeap.h"
 
 int getWindowWidth();
 int getNumberOfDigits(int i);

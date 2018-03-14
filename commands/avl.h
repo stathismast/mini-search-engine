@@ -1,4 +1,4 @@
-#include "searchInfo.h"
+#include "maxHeap.h"
 
 #ifndef AVL_H
 #define AVL_H

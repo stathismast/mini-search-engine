@@ -1,22 +1,22 @@
-#ifndef SEARCHINFO_H
-#define SEARCHINFO_H
+#ifndef MAXHEAP_H
+#define MAXHEAP_H
 
-typedef struct SearchInfo{
+typedef struct MaxHeapNode{
 	int id;			//Document id
     double score;	//Score of given document id
-} SearchInfo;
+} MaxHeapNode;
 
 typedef struct MaxHeap{
-	int last;
-	SearchInfo * array;
+	int elementCounter;		//Number of elements in the heap
+	MaxHeapNode * array;		//Array of search info nodes
 } MaxHeap;
 
-#endif //SEARCHINFO_H
+#endif //MAXHEAP_H
 
 MaxHeap * newMaxHeap(int size);
 void freeMaxHeap(MaxHeap * heap);
-void swap(SearchInfo * a, SearchInfo * b);
+void swap(MaxHeapNode * a, MaxHeapNode * b);
 void heapify(MaxHeap * heap, int root);
 void pushToHeap(MaxHeap * heap, int id, double score);
 void printHeap(MaxHeap * heap);
-SearchInfo popFromHeap(MaxHeap * heap);
+MaxHeapNode popFromHeap(MaxHeap * heap);
