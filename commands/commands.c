@@ -146,7 +146,7 @@ int getTermFrequency(int id, char * word, TrieNode * node){
 			if(node->postingList != NULL){							//Check if it has a posting list, indicating that it is the last letter of an included word
 				PostingListNode ** plNode;
 				plNode = getPosting(id, &(node->postingList->next));//Get the posting list for the given id
-				if(*plNode == NULL) return 0;						//If there is no postingList for this id
+				if(plNode ==NULL || *plNode == NULL) return 0;		//If there is no postingList for this id
 				return (*plNode)->count;							//Return the term frequency of this it-term combination
 			}
 			else return 0;											//If it doesn't have a posting list, its not an included word

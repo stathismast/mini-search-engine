@@ -55,14 +55,12 @@ void addToPostingList(int id, PostingListHead ** head){
 //Return a pointer to a posting list node for the given id, or NULL if it is not found
 PostingListNode ** getPosting(int id, PostingListNode ** node){
 	if(*node == NULL) return node;
-	
+
 	//If the id of the current node is greater than the id we are searching for
 	//that means that the given id is not included in this posting list,
-	//because ids are stored in ascending order
+	//because ids are stored in an ascending order
 	if((*node)->id > id){
-		PostingListNode ** temp;
-		*temp = NULL;
-		return temp;
+		return NULL;
 	}
 	//If we found a matching id, return the posting list node
 	if((*node)->id == id){
