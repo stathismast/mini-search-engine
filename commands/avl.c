@@ -10,7 +10,7 @@ https://www.cs.auckland.ac.nz/software/AlgAnim/AVL.html
 https://en.wikipedia.org/wiki/AVL_tree
 
 No pre-written code was used. All the sources were used to understand the
-requirments and basic functionallity of AVL Trees, with the biggest contibutor
+requirements and basic functionality of AVL Trees, with the biggest contributor
 being the book mentioned above.
 */
 
