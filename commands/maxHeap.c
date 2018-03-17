@@ -1,4 +1,5 @@
 #include "maxHeap.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 /*
@@ -10,8 +11,10 @@ and adjusted to the requirments of this assignment.
 //Create and initialize a maxHeap with the given size
 MaxHeap * newMaxHeap(int size){
 	MaxHeap * heap = malloc(sizeof(MaxHeap));
+	if(heap == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	heap->elementCounter = 0;
 	heap->array = malloc(size*sizeof(MaxHeapNode));
+	if(heap->array == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	return heap;
 }
 

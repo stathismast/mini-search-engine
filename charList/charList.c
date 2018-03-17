@@ -1,9 +1,11 @@
 #include "charList.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 //Create and initialize a new CharList
 CharList * newCharList(char c){
 	CharList * node = malloc(sizeof(CharList));
+	if(node == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	node->c = c;
 	node->next = NULL;
 	return node;
@@ -39,6 +41,7 @@ int charListLength(CharList * charList){
 char * charListToString(CharList * charList){
 	int length = charListLength(charList);				//Get the length of the charList
 	char * string = malloc(length * sizeof(char) + 1);	//Allocate space for the string
+	if(string == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	CharList * node = charList;
 
 	for(int i=0; i<length; i++){						//For every letter in the charList

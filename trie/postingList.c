@@ -1,9 +1,11 @@
 #include "postingList.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 //Create and initialize a new posting list head
 PostingListHead * newPostingListHead(){
 	PostingListHead * head = malloc(sizeof(PostingListHead));
+	if(head == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	head->documentFreq = 0;
 	return head;
 }
@@ -11,6 +13,7 @@ PostingListHead * newPostingListHead(){
 //Create and initialize a new posting list node
 PostingListNode * newPostingListNode(int id){
 	PostingListNode * node = malloc(sizeof(PostingListNode));
+	if(node == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	node->id = id;
 	node->count = 1;
 	node->next = NULL;

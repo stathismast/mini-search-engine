@@ -26,6 +26,7 @@ int main(int argc, char *argv[]){
 
 	//Insert every word into the trie and store the number of words in each line
 	wordCounter = malloc(lineCounter * sizeof(int));
+	if(wordCounter == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	for(int i=0; i<lineCounter; i++)
 		wordCounter[i] = addWordsIntoTrie(lines[i], i, &trie);
 

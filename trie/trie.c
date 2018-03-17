@@ -1,10 +1,12 @@
 #include "trie.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 //Allocate space for a new trie node and initialize it
 TrieNode * newTrieNode(char letter){
 	TrieNode * node = malloc(sizeof(TrieNode));
+	if(node == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	node->letter = letter;
 	node->otherLetter = NULL;
 	node->nextLetter = NULL;
@@ -76,6 +78,7 @@ int addWordsIntoTrie(char * line, int id, TrieNode ** trie){
 
 	while(line[start] != 0 && findNextWord(&start, &end, line)){	//While there is still alteast one word in the given string
 		string = malloc(end - start + 1);							//Allocate space for that word
+		if(string == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 		memcpy(string, &line[start], end - start);					//Store it in a new string
 		string[end - start] = 0;									//Add null character at the end
 		addWord(string, id, trie);									//Insert it into the trie

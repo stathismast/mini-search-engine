@@ -1,4 +1,5 @@
 #include "avl.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 /*
@@ -17,6 +18,7 @@ being the book mentioned above.
 //Create and initialize an AVLTree node
 AVLTree * newAVLNode(int id, double score){
 	AVLTree * node = malloc(sizeof(AVLTree));
+	if(node == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	node->id = id;
 	node->score = score;
 	node->height = 0;

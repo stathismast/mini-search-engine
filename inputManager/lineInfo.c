@@ -1,9 +1,11 @@
 #include "lineInfo.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 //Create and initialize a new LineInfo node
 LineInfo * newLineInfo(){
 	LineInfo * node = malloc(sizeof(LineInfo));
+	if(node == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	node->letterCount = 0;
 	node->next = NULL;
 	return node;

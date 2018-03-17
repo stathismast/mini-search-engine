@@ -67,6 +67,7 @@ int isSearchTerm(char * term, char ** searchTerms){
 char * copyDocument(char * document){
 	int length = strlen(document);
 	char * copy = malloc((length+1)*sizeof(char));
+	if(copy == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	memcpy(copy, document, length);
 	copy[length] = 0;
 	return copy;
@@ -87,6 +88,7 @@ void printSearchResults(int k, int lineCounter, MaxHeap * heap, char ** lines, c
 						//This is printed after we print each line from the document
 
 	indicators = malloc(windowWidth * sizeof(char)+1);	//Allocate space for 'indicators' string equal to the width of the window/terminal
+	if(indicators == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	for(int i=0; i<windowWidth; i++)					//Initialize indicators to ' '
 		indicators[i] = ' ';
 	indicators[windowWidth] = 0;						//Add a null character at the end

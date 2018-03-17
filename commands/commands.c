@@ -172,6 +172,7 @@ void search(int k, int * wordCounter, double avgWordCount, int lineCounter, char
 	for(int i=0; i<10; i++)								//Read and store every search term
 		if((term = strtok(NULL, " \t\n")) != NULL){		//Check the token/term
 			searchTerms[i] = malloc(strlen(term)+1);	//Allocate space for it
+			if(searchTerms[i] == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 			memcpy(searchTerms[i], term, strlen(term));	//Store it
 			searchTerms[i][strlen(term)] = 0;			//Add a null character at the end of the string
 		}

@@ -95,8 +95,10 @@ char ** secondRead(FILE * input, int lineCounter, LineInfo * head){
 
 	//Allocate space for each line
 	lines = malloc(lineCounter*sizeof(char*));
+	if(lines == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 	for(int i=0; i<lineCounter; i++){
 		lines[i] = malloc(node->letterCount * sizeof(char));
+		if(lines[i] == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 		node = node->next;	//Get the LineInfo node for the next line
 	}
 
@@ -179,6 +181,7 @@ int manageArguments(int argc, char *argv[], char ** fileName, int * k){
 			if(argc > i+1 && !gotInputFile){		//If there is another argument after this
 				//Allocate space for the file name
 				(*fileName) = malloc((strlen(argv[i+1])+1)*sizeof(char));
+				if((*fileName) == NULL) { printf("ERROR: Memory allocation failed.\n"); exit(-1); }
 				strcpy(*fileName,argv[i+1]);		//Store file name
 				gotInputFile = 1;					//Set value to '1' to denote that we now have recieved an input file name
 				i++;								//Increase 'i' because we consumed the following argument as well
