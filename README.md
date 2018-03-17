@@ -1,3 +1,5 @@
+Efstathios-Andreas Mastorakis - sdi1500092
+
 # miniSearch
 First Project for SysPro 2018 - Mini Search Engine
 
@@ -23,14 +25,15 @@ trie         : Contains the implementation of the trie and the posting list.
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 I tried to include descriptive comments alongside the code to help make it more
-comprehensive. I used tab length = 4 on my editor, so if the comments appear
-misaligned, changing to a tab length of 4 will help.  
+comprehensive. I used 'tab length = 4' on my editor, so if the comments appear
+very misaligned, changing your editor settings to 'tab length = 4' will help.  
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-Included files in more details:
-avl.c/.h           : Implementation of an AVL Tree data structure used to store
-                     the scores for each document after a search command.
+Included files:
+avl.c/.h           : Implementation of an AVL Tree data structure used to
+                     compile together and store the scores for each document
+                     after a search command.
 charList.c/.h      : Simple implementation of a list of characters.
 commands.c/.h      : Executes given commands (/search, /df, /tf, /exit, /help).
 inputManager.c/.h  : Reads and stores the dataset. Goes through the file twice,
@@ -62,7 +65,7 @@ Below are some brief explanations on some of the most important operations.
 Note: There are detailed comments on each function and structure in the .c and
 .h files.
 
-Reading the input file: (inputManager.c - readInputFile)
+Reading the input file:                         (inputManager.c - readInputFile)
 This is split into two stages. First we go through the file, checking if the ids
 are correct, counting the length of each line and the total number of lines.
 Now that we know how long a line is, we allocate space for each line and read
@@ -71,12 +74,12 @@ considered valid if it ends in a '\n' (newline) character. Also if a line is
 empty or if it doesn't start with an id, or if the id is not correct (in
 ascending order) the input fails and an appropriate message is printed.
 
-Loading every word in the trie: (trie.c - addWordsIntoTrie)
+Loading every word in the trie:                      (trie.c - addWordsIntoTrie)
 After we have stored every line in the input file, we insert every word, letter
 by letter, in the trie. At the same time, we count the number of words in each
 line/document.
 
-Posting list: (postingList.c)
+Posting list:                                                    (postingList.c)
 When a word has been inserted in the trie we update the posting list for that
 word. The posting list head keep the total document frequency for that word as
 well as a pointer to the last node of the list. Using this pointer we can
@@ -85,7 +88,7 @@ the ids of the documents are going to be getting larger, so we will never need
 to insert anything somewhere in the middle of the list. Each node holds the id
 of a document and the term frequency of the word for that document.
 
-/df and /tf commands: (commands.c)
+/df and /tf commands:                                               (commands.c)
 When a /df command is entered without any arguments we access the trie node by
 node checking to see if any node has a posting list. If so, it is the last
 letter of a word and so we print it alongside the document id. If /df is called
@@ -96,7 +99,7 @@ included in the given document. If it is, we print its term frequency but if any
 one of the above requirements is not met, then that word is printed out with
 and term frequency of '0' for that document.
 
-/search command: (commands.c)
+/search command:                                                    (commands.c)
 When the /search command is called, we first collect and store up to ten search
 terms and then for each one of those check if it is included in the trie. If so,
 we check to see which documents have that term and for each document calculate
@@ -104,14 +107,14 @@ a score. Each document id - score combination is then inserted in an AVL tree in
 order to efficiently compile the scores for each document. The scores are than
 sorted using a heap and the top k results are printed out. (more details below)
 
-AVL Tree: (avl.c)
+AVL Tree:                                                                (avl.c)
 I use an AVL tree to store the scores for each document when the /search command
 is used. Every time I calculate the score of a document for a certain term, I
 add the score to the AVL tree. If there is already a node for that document id
 the new score is added to the already existing one, otherwise a new node is
 created for that document id.
 
-MaxHeap: (maxHeap.c)
+MaxHeap:                                                             (maxHeap.c)
 After the scores for every document have been compiled in the AVL Tree, each
 node of the AVL tree is inserted into a heap, which always keeps the node with
 the greatest score at the top. That way, after the heap has been formed we just
