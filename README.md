@@ -3,6 +3,14 @@
 - Implemented in C. Includes a Trie data structure for the representation of an Inverted Index.
 - Includes a variety of compatible datasets.
 
+## Dependencies
+- In order to run this code you only need to have ```make``` and the ```gcc``` compiler installed on your machine.
+- If by any chance those are not installed on your Linux distro, you can install them as such:
+```
+sudo apt-get install make
+sudo apt-get install gcc
+```
+
 ## Compile
 
 - To compile, execute:
